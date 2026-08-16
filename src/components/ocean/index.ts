@@ -1,0 +1,5 @@
+export { default as OceanBackground } from './OceanBackground'
+export { createOceanGradient } from './oceanGradient'
+export { OCEAN_DEPTH_ORDER, OCEAN_PALETTE } from './oceanPalette'
+export { useOceanBackground } from './useOceanBackground'
+export type { OceanBackgroundConfig, OceanBackgroundProps, OceanDepth, OceanElement } from './types'

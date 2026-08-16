@@ -1,0 +1,193 @@
+.project-record {
+  --aqua: 150 240 232;
+  --sand: 235 208 164;
+  max-width: 86rem;
+  margin-inline: auto;
+  padding: 5rem 3rem;
+  color: rgb(238 255 255 / 0.95);
+}
+
+.project-record__terminal {
+  border: 1px solid rgb(var(--aqua) / 0.18);
+  background: rgb(3 17 25 / 0.82);
+}
+
+.project-record__terminal-head {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgb(var(--aqua) / 0.14);
+  background: rgb(var(--aqua) / 0.04);
+}
+
+.project-record__terminal-head code {
+  min-width: 0;
+  overflow: hidden;
+  color: rgb(238 255 255 / 0.8);
+  font: 400 11px/1.4 ui-monospace, "JetBrains Mono", monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-record__terminal-head code span {
+  color: rgb(var(--aqua) / 0.9);
+}
+
+.project-record__terminal-head button {
+  flex: 0 0 auto;
+  padding: 0.55rem 0.7rem;
+  color: rgb(198 226 230 / 0.74);
+  border: 1px solid rgb(var(--aqua) / 0.24);
+  border-radius: 0;
+  background: transparent;
+  font: 500 10px/1 ui-monospace, "JetBrains Mono", monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.project-record__terminal-head button:hover {
+  color: rgb(var(--sand) / 0.95);
+  border-color: rgb(var(--sand) / 0.78);
+}
+
+.project-record__terminal-head button:focus-visible {
+  outline: 1px solid rgb(var(--sand) / 0.9);
+  outline-offset: 4px;
+}
+
+.project-record__row {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) 150px;
+  gap: 1rem;
+  align-items: center;
+  min-height: 45px;
+  padding: 7px 16px 7px 14px;
+  border-left: 2px solid transparent;
+  opacity: 0.06;
+  transition: opacity 240ms ease, color 200ms ease, background-color 200ms ease;
+}
+
+.project-record__row.is-visible {
+  opacity: 1;
+}
+
+.project-record__row.is-highlighted {
+  border-left-color: rgb(var(--sand) / 0.7);
+  background: rgb(var(--sand) / 0.07);
+}
+
+.project-record__row code {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-record__key {
+  color: rgb(198 226 230 / 0.74);
+  font: 400 11px/1.4 ui-monospace, "JetBrains Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.project-record__value {
+  color: rgb(238 255 255 / 0.95);
+  font: 400 11.5px/1.5 ui-monospace, "JetBrains Mono", monospace;
+}
+
+.project-record__row.is-highlighted .project-record__value {
+  color: rgb(238 255 255 / 1);
+}
+
+.project-record__row-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+}
+
+.project-record__row-meta code {
+  max-width: 72px;
+  color: rgb(198 226 230 / 0.6);
+  font: 400 9.5px/1.4 ui-monospace, "JetBrains Mono", monospace;
+  letter-spacing: 0.1em;
+  text-align: right;
+}
+
+.project-record__bar-track {
+  display: block;
+  width: 64px;
+  height: 6px;
+}
+
+.project-record__bar-track > span {
+  display: block;
+  height: 6px;
+  background: rgb(var(--aqua) / 0.38);
+}
+
+.project-record__row.is-highlighted .project-record__bar-track > span {
+  background: rgb(var(--sand) / 0.75);
+}
+
+.project-record__row.is-highlighted .project-record__row-meta code {
+  color: rgb(var(--sand) / 0.9);
+}
+
+.project-record__result {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 16px;
+  padding: 12px 0;
+  border-top: 1px solid rgb(var(--aqua) / 0.12);
+  color: rgb(198 226 230 / 0.6);
+}
+
+.project-record__result code {
+  font: 400 11px/1.5 ui-monospace, "JetBrains Mono", monospace;
+}
+
+.project-record__result.is-finished {
+  color: rgb(var(--aqua) / 0.92);
+}
+
+.project-record__caret {
+  width: 7px;
+  height: 13px;
+  background: rgb(var(--sand) / 0.85);
+  animation: project-caret 850ms steps(1) infinite;
+}
+
+@keyframes project-caret {
+  50% { opacity: 0; }
+}
+
+@media (max-width: 720px) {
+  [data-project-record] {
+    padding-inline: 24px;
+  }
+
+  .project-record__row {
+    grid-template-columns: 130px minmax(0, 1fr);
+  }
+
+  .project-record__row-meta {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-record__row {
+    opacity: 1;
+    transition: none;
+  }
+
+  .project-record__caret {
+    animation: none;
+  }
+}

@@ -1,0 +1,61 @@
+.ocean-background {
+  position: relative;
+  min-height: calc(var(--ocean-screens, 5) * 100vh);
+  min-height: calc(var(--ocean-screens, 5) * 100svh);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--ocean-gradient);
+}
+
+.ocean-background[data-ocean-surface='true'] {
+  margin-top: -10px;
+  padding-top: 10px;
+  clip-path: polygon(
+    0 7px,
+    12% 11px,
+    27% 4px,
+    43% 10px,
+    60% 3px,
+    76% 12px,
+    89% 5px,
+    100% 9px,
+    100% 100%,
+    0 100%
+  );
+  animation: ocean-edge-motion 14s ease-in-out infinite alternate;
+}
+
+@keyframes ocean-edge-motion {
+  to {
+    clip-path: polygon(
+      0 9px,
+      12% 9px,
+      27% 6px,
+      43% 8px,
+      60% 5px,
+      76% 10px,
+      89% 7px,
+      100% 7px,
+      100% 100%,
+      0 100%
+    );
+  }
+}
+
+/* Content remains above the shared background. */
+.ocean-background > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .ocean-background {
+    scroll-behavior: auto;
+  }
+
+  .ocean-background[data-ocean-surface='true'] {
+    animation: none;
+  }
+
+}
