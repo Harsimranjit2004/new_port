@@ -1,3 +1,4 @@
+import { Footer } from './components/footer'
 import { Navbar } from './components/navbar'
 import { OceanBackground } from './components/ocean'
 import ProjectRecordShowcase from './pages/ProjectRecordShowcase'
@@ -21,7 +22,7 @@ export default function App() {
         </div>
       </section>
       <OceanBackground
-        screens={6}
+        screens={5}
         startDepth="shallow"
         endDepth="deep"
         showSurfaceWaves
@@ -32,6 +33,7 @@ export default function App() {
           what made it possible.
         </p>
         <ProjectRecordShowcase />
+        <Footer />
       </OceanBackground>
     </main>
   )
