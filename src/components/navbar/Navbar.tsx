@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, type CSSProperties } from 'react'
 
 export type NavigationItem = { label: string; href: string }
@@ -88,50 +89,30 @@ export default function Navbar({
   monogram = 'h.',
   homeHref = '/',
   items = defaultItems,
-  shrinkDistance = 700,
   expandedWidth = 900,
   compactWidth = 820,
   submergedAt,
 }: NavbarProps) {
   const headerRef = useRef<HTMLElement>(null)
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     const header = headerRef.current
     if (!header) return
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    let current = reduceMotion ? 1 : 0
-    let target = current
-    let frame = 0
-    let lastTime = performance.now()
-
-    const updateTarget = () => {
-      target = Math.min(1, Math.max(0, window.scrollY / Math.max(1, shrinkDistance)))
+    const updateTheme = () => {
       const threshold = submergedAt ?? window.innerHeight * .85
       header.classList.toggle('is-submerged', window.scrollY >= threshold)
     }
 
-    const animate = (time: number) => {
-      const delta = Math.min((time - lastTime) / 1000, .1)
-      lastTime = time
-      current += (target - current) * (1 - Math.exp(-8 * delta))
-      if (Math.abs(target - current) < .0005) current = target
-      header.style.setProperty('--nav-progress', current.toFixed(4))
-      frame = requestAnimationFrame(animate)
-    }
-
-    updateTarget()
-    header.style.setProperty('--nav-progress', String(current))
-    if (!reduceMotion) frame = requestAnimationFrame(animate)
-    window.addEventListener('scroll', updateTarget, { passive: true })
-    window.addEventListener('resize', updateTarget, { passive: true })
-
+    updateTheme()
+    window.addEventListener('scroll', updateTheme, { passive: true })
+    window.addEventListener('resize', updateTheme, { passive: true })
     return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', updateTarget)
-      window.removeEventListener('resize', updateTarget)
+      window.removeEventListener('scroll', updateTheme)
+      window.removeEventListener('resize', updateTheme)
     }
-  }, [shrinkDistance, submergedAt])
+  }, [submergedAt])
 
   const dimensions = {
     '--nav-expanded': `${Math.max(expandedWidth, compactWidth)}px`,
@@ -141,15 +122,39 @@ export default function Navbar({
   return (
     <>
       <style>{styles}</style>
-      <header ref={headerRef} className="portable-ocean-nav" style={dimensions}>
-        <a className="portable-ocean-nav__brand" href={homeHref} aria-label={`${brand} — Home`}>
+      <motion.header
+        ref={headerRef}
+        className="portable-ocean-nav"
+        style={dimensions}
+        initial={reducedMotion ? false : { opacity: 0, x: '-50%', y: -18, scale: 0.98 }}
+        animate={{ opacity: 1, x: '-50%', y: 0, scale: 1 }}
+        transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <motion.a
+          className="portable-ocean-nav__brand"
+          href={homeHref}
+          aria-label={`${brand} — Home`}
+          initial={reducedMotion ? false : { opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.55, delay: 0.42 }}
+        >
           <span className="portable-ocean-nav__mark">{monogram}</span>
           <span className="portable-ocean-nav__name">{brand}<span>.</span></span>
-        </a>
+        </motion.a>
         <nav aria-label="Main navigation">
-          {items.map((item) => <a href={item.href} key={item.href}>{item.label}</a>)}
+          {items.map((item, index) => (
+            <motion.a
+              href={item.href}
+              key={item.href}
+              initial={reducedMotion ? false : { opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.48 + index * 0.07 }}
+            >
+              {item.label}
+            </motion.a>
+          ))}
         </nav>
-      </header>
+      </motion.header>
     </>
   )
 }

@@ -49,6 +49,10 @@
 }
 
 
+html[data-motion-paused] .ocean-background[data-ocean-surface='true'] {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ocean-background {
     scroll-behavior: auto;

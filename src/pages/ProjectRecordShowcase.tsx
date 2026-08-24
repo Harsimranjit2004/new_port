@@ -1,4 +1,4 @@
-import { ProjectRecord, type ProjectReadoutRow } from '../components/project-record'
+import { ProjectRecord, type ProjectPipelineStep, type ProjectReadoutRow } from '../components/project-record'
 import './ProjectRecordShowcase.css'
 
 interface ShowcaseProject {
@@ -7,10 +7,13 @@ interface ShowcaseProject {
   status: string
   title: string
   question: string
-  answer: string
+
   href: string
   cmd: string
   result: string
+
+  pipeline: ProjectPipelineStep[]
+  insight: string
   readout: ProjectReadoutRow[]
 }
 
@@ -18,8 +21,13 @@ const projects: ShowcaseProject[] = [
   {
     index: '01', domain: 'Model infrastructure', status: 'Active build', title: 'Whetstone',
     question: 'What has to survive for a model result to be reproducible?',
-    answer: 'The path that produced it.', href: '/work/whetstone',
+    href: '/work/whetstone',
     cmd: 'whetstone trace --run 7f3a2c', result: '✓ lineage resolved · 7/7 records present',
+
+    pipeline: [
+      { label: 'Dataset' }, { label: 'Identity' }, { label: 'Run' }, { label: 'Artifact', state: 'decision' },
+    ],
+    insight: 'Complete lineage · 7/7 records present',
     readout: [
       { k: 'dataset', v: 'manifest sha256:91d4… · 3.1M records', note: 'content-addressed', w: 0.82 },
       { k: 'identity', v: 'canonical JSON · SHA-256 · NFC', note: 'deterministic', w: 0.46 },
@@ -32,8 +40,13 @@ const projects: ShowcaseProject[] = [
   {
     index: '02', domain: 'Multimodal AI', status: 'Active build', title: 'Multimodal Moderation',
     question: 'How much evidence should a system acquire before making a decision?',
-    answer: 'Only what can change the decision.', href: '/work/moderation',
-    cmd: 'moderate clip_2291.mp4 --explain', result: '✓ ALLOW · promotional · 3 items cited, 2 declined',
+    href: '/work/moderation',
+    cmd: 'moderate clip_2291.mp4 --explain', result: '✓ ALLOW · promotional · 3 items cited · 2 declined',
+
+    pipeline: [
+      { label: 'Video' }, { label: 'Frames' }, { label: 'OCR' }, { label: 'ASR skipped', state: 'skipped' }, { label: 'Decision', state: 'decision' },
+    ],
+    insight: 'Decision stable after OCR · ASR not required',
     readout: [
       { k: 'media', v: '00:42 · 1080p · 18MB', note: 'normalized', w: 0.35 },
       { k: 'frames', v: '12 sampled · motion-aware selection', note: 'acquired', w: 0.4 },
@@ -45,8 +58,13 @@ const projects: ShowcaseProject[] = [
   {
     index: '03', domain: 'Ranking systems', status: 'Researching', title: 'Recommendation Systems',
     question: 'What happens when model score conflicts with system constraints?',
-    answer: 'The constraints win.', href: '/work/recommendation-systems',
+    href: '/work/recommendation-systems',
     cmd: 'rank --session 4471 --why', result: '✓ served B · A · E · C · D — two moves after scoring',
+
+    pipeline: [
+      { label: 'Signals' }, { label: 'Candidates' }, { label: 'Score' }, { label: 'Rerank' }, { label: 'Serve', state: 'decision' },
+    ],
+    insight: 'Two ordering changes applied after scoring',
     readout: [
       { k: 'signals', v: 'dwell · follow · repeat views', note: '31 events', w: 0.46 },
       { k: 'candidates', v: '1,240 → 180 · 4 retrievers', note: 'diverse', w: 1 },
@@ -62,7 +80,7 @@ export default function ProjectRecordShowcase() {
     <section className="project-showcase" aria-label="Selected engineering projects">
       {projects.map((project) => (
         <article className="project-showcase__project" key={project.index}>
-          <header>
+          <header className="project-showcase__header">
             <div className="project-showcase__rail">
               <span>{project.index}</span>
               <span>{project.domain}</span>
@@ -71,17 +89,18 @@ export default function ProjectRecordShowcase() {
             </div>
             <h2>{project.title}</h2>
             <p className="project-showcase__question">{project.question}</p>
+            <a className="project-showcase__open-record" href={project.href}>Open record {project.index} <span aria-hidden="true">↗</span></a>
           </header>
 
-          <ProjectRecord className="project-showcase__artifact" cmd={project.cmd} result={project.result} readout={project.readout} />
+          <ProjectRecord
+            className="project-showcase__artifact"
+            cmd={project.cmd}
+            result={project.result}
+            readout={project.readout}
+            pipeline={project.pipeline}
+            insight={project.insight}
+          />
 
-          <footer className="project-showcase__answer-row">
-            <div>
-              <span className="project-showcase__answer-label">The answer</span>
-              <p>{project.answer}</p>
-            </div>
-            <a href={project.href}>Explore project <span aria-hidden="true">↗</span></a>
-          </footer>
         </article>
       ))}
     </section>

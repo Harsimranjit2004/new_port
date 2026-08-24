@@ -1,4 +1,5 @@
 .white-surface {
+  position: relative;
   display: grid;
   min-height: 85vh;
   min-height: 85svh;
@@ -6,20 +7,59 @@
   padding: 5rem 1.25rem 1rem;
   overflow: hidden;
   color: #0b1728;
+  background: #ffffff;
+}
+
+.atmosphere-scroll,
+.atmosphere,
+.surface-reflection {
+  position: absolute;
+  pointer-events: none;
+}
+
+.atmosphere-scroll {
+  inset: 0;
+  will-change: transform, opacity;
+}
+
+.atmosphere {
+  inset: -2%;
   background:
     radial-gradient(ellipse 78% 58% at 50% 104%, rgb(85 201 220 / 0.4), transparent 68%),
     radial-gradient(ellipse 46% 62% at 0% 42%, rgb(85 201 220 / 0.19), transparent 72%),
     radial-gradient(ellipse 44% 58% at 100% 44%, rgb(85 201 220 / 0.17), transparent 72%),
-    radial-gradient(ellipse 58% 42% at 50% 48%, rgb(85 201 220 / 0.11), transparent 76%),
-    #ffffff;
+    radial-gradient(ellipse 58% 42% at 50% 48%, rgb(85 201 220 / 0.11), transparent 76%);
+  animation: atmosphere-drift 12s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+.surface-reflection {
+  right: 8%;
+  bottom: 5%;
+  width: 58%;
+  height: 12%;
+  opacity: 0.32;
+  background: repeating-linear-gradient(176deg, transparent 0 16px, rgb(85 201 220 / 0.07) 17px 18px, transparent 19px 34px);
+  animation: surface-reflection-drift 7s ease-in-out infinite alternate;
+}
+
+@keyframes atmosphere-drift {
+  to { opacity: 0.82; transform: translate3d(10px, 7px, 0) scale(1.015); }
+}
+
+@keyframes surface-reflection-drift {
+  to { opacity: 0.65; transform: translate3d(18px, 3px, 0); }
 }
 
 .hero-type {
   display: grid;
-  width: min(90vw, 88rem);
+  width: min(94vw, 92rem);
   gap: 0;
   place-items: center;
+  position: relative;
+  z-index: 1;
   transform: translateY(-2vh);
+  will-change: transform, opacity, filter;
 }
 
 .hero-type__line {
@@ -49,13 +89,19 @@
   width: 100%;
   margin: 0;
   color: #0b1728;
-  font-size: clamp(4rem, 10.8vw, 10.25rem);
+  font-size: clamp(4.25rem, 11.3vw, 11rem);
   font-weight: 650;
   line-height: 0.84;
-  letter-spacing: -0.025em;
+  letter-spacing: 0.025em;
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.white-surface h1 > span,
+.expertise-entry,
+.expertise-entry > span {
+  display: inline-block;
 }
 
 .hero-type__line--disciplines {
@@ -78,19 +124,35 @@
   font-weight: 300;
 }
 
+.expertise-entry > .expertise-separator {
+  margin-inline: clamp(0.65rem, 1.1vw, 1.15rem);
+  color: #9aa6b4;
+  font-weight: 300;
+}
+
+html[data-motion-paused] .atmosphere,
+html[data-motion-paused] .surface-reflection {
+  animation-play-state: paused;
+}
+
 .descent-statement {
   width: fit-content;
   max-width: calc(100% - 3rem);
-  margin: 0 0 42svh clamp(1.5rem, 4.5vw, 4.5rem);
-  padding-top: 58vh;
-  padding-top: 58svh;
+  margin: 0 auto 14svh;
+  padding-top: 30vh;
+  padding-top: 30svh;
   color: rgb(238 255 255 / 0.95);
   font-family: Inter, system-ui, sans-serif;
   font-size: clamp(1.8rem, 3.35vw, 3.05rem);
   font-weight: 300;
   line-height: 1.28;
   letter-spacing: -0.025em;
-  text-align: left;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .atmosphere { animation-duration: 18s; }
+  .surface-reflection { opacity: 0.22; }
 }
 
 @media (max-width: 620px) {
@@ -101,8 +163,8 @@
   .descent-statement {
     width: fit-content;
     max-width: calc(100% - 3rem);
-    margin: 0 0 32svh 1.5rem;
-    padding-top: 55svh;
+    margin: 0 auto 10svh;
+    padding-top: 24svh;
     font-size: clamp(1.5rem, 7vw, 2.1rem);
   }
 
@@ -123,8 +185,21 @@
   }
 
   .white-surface h1 {
-    font-size: clamp(2.4rem, 12.4vw, 5rem);
-    letter-spacing: -0.02em;
+    font-size: clamp(2.5rem, 13vw, 5.25rem);
+    letter-spacing: 0.005em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere,
+  .surface-reflection {
+    animation: none;
+    will-change: auto;
+  }
+
+  .hero-type,
+  .atmosphere-scroll {
+    will-change: auto;
   }
 }
 

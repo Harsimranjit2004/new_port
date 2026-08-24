@@ -1,32 +1,27 @@
+import { useRef } from 'react'
 import { Footer } from './components/footer'
 import { Navbar } from './components/navbar'
 import { OceanBackground } from './components/ocean'
+import { useHomeScrollTimeline } from './hooks/useHomeScrollTimeline'
+import { useReducedMotion } from './hooks/useReducedMotion'
+import { useSmoothScroll } from './hooks/useSmoothScroll'
 import ProjectRecordShowcase from './pages/ProjectRecordShowcase'
+import SurfaceHero from './sections/home/SurfaceHero'
 import './App.css'
 
 export default function App() {
+  const rootRef = useRef<HTMLElement>(null)
+  const heroRef = useRef<HTMLElement>(null)
+  const reducedMotion = useReducedMotion()
+
+  useSmoothScroll(reducedMotion)
+  useHomeScrollTimeline({ rootRef, heroRef, reducedMotion })
+
   return (
-    <main id="top">
+    <main id="top" ref={rootRef}>
       <Navbar />
-      <section className="white-surface" aria-labelledby="home-name">
-        <div className="hero-type">
-          <p className="hero-type__line">Engineering beneath the surface <span aria-hidden="true">—</span> ML / AI engineer</p>
-          <h1 id="home-name">Harsimranjit</h1>
-          <p className="hero-type__line hero-type__line--disciplines">
-            <span>Machine learning</span>
-            <span aria-hidden="true">—</span>
-            <span>ML systems</span>
-            <span aria-hidden="true">—</span>
-            <span>Research &amp; experimentation</span>
-          </p>
-        </div>
-      </section>
-      <OceanBackground
-        screens={5}
-        startDepth="shallow"
-        endDepth="deep"
-        showSurfaceWaves
-      >
+      <SurfaceHero heroRef={heroRef} reducedMotion={reducedMotion} />
+      <OceanBackground screens={1} startDepth="shallow" endDepth="deep" showSurfaceWaves>
         <p className="descent-statement">
           The result is only the surface.<br />
           The interesting part is<br />

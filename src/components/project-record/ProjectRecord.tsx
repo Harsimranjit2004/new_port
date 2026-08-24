@@ -9,10 +9,17 @@ export interface ProjectReadoutRow {
   hi?: boolean
 }
 
+export interface ProjectPipelineStep {
+  label: string
+  state?: 'complete' | 'skipped' | 'decision'
+}
+
 export interface ProjectRecordProps {
   cmd?: string
   result?: string
   readout?: ProjectReadoutRow[]
+  pipeline?: ProjectPipelineStep[]
+  insight?: string
   className?: string
 }
 
@@ -25,6 +32,8 @@ export default function ProjectRecord({
   cmd,
   result,
   readout,
+  pipeline,
+  insight,
   className = '',
 }: ProjectRecordProps) {
   const rootRef = useRef<HTMLElement>(null)
@@ -52,7 +61,7 @@ export default function ProjectRecord({
     }
     setVisibleRows(0)
     rows.forEach((_, rowIndex) => {
-      timersRef.current.push(window.setTimeout(() => setVisibleRows(rowIndex + 1), rowIndex * 120))
+      timersRef.current.push(window.setTimeout(() => setVisibleRows(rowIndex + 1), (rowIndex + 1) * 180))
     })
   }, [clearTimers, reducedMotion, rows])
 
@@ -90,10 +99,25 @@ export default function ProjectRecord({
   return (
     <section ref={rootRef} className={`project-record ${className}`.trim()} data-project-record aria-label="Project terminal readout">
       <div className="project-record__terminal">
+        <div className="project-record__statusbar">
+          <div className="project-record__window-dots" aria-hidden="true"><span /><span /><span /></div>
+          <span>System trace</span>
+          <span className="project-record__online"><i aria-hidden="true" /> Online</span>
+        </div>
         <div className="project-record__terminal-head">
           <code><span>$</span> {cmd ?? 'system trace --latest'}</code>
-          <button type="button" onClick={reveal}>Replay</button>
         </div>
+
+        {pipeline?.length ? (
+          <div className="project-record__pipeline" aria-label="Execution pipeline">
+            {pipeline.map((step, stepIndex) => (
+              <div className={`project-record__pipeline-step is-${step.state ?? 'complete'}`} key={`${step.label}-${stepIndex}`}>
+                <span>{step.label}</span>
+                {stepIndex < pipeline.length - 1 && <i aria-hidden="true" />}
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         <div className="project-record__rows">
           {rows.map((row, rowIndex) => (
@@ -117,6 +141,13 @@ export default function ProjectRecord({
           <code>{finished ? (result ?? '✓ trace resolved · constraint verified') : 'running…'}</code>
           {!finished && <span className="project-record__caret" aria-hidden="true" />}
         </div>
+
+        {insight ? (
+          <div className={`project-record__insight ${finished ? 'is-visible' : ''}`}>
+            <span>System insight</span>
+            <code>{insight}</code>
+          </div>
+        ) : null}
       </div>
     </section>
   )

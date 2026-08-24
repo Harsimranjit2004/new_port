@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" role="img" aria-labelledby="title desc">
+  <title id="title">Whetstone provenance system</title>
+  <desc id="desc">An abstract technical illustration showing data, tokenizer, training, evaluation, and artifact records converging into a reproducible model.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071e29"/>
+      <stop offset="1" stop-color="#031119"/>
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop offset="0" stop-color="#96f0e8" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#96f0e8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#96f0e8" stroke-opacity=".045"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="720" fill="url(#bg)"/>
+  <rect width="1600" height="720" fill="url(#grid)"/>
+  <circle cx="800" cy="348" r="310" fill="url(#halo)"/>
+  <circle cx="800" cy="348" r="250" fill="none" stroke="#96f0e8" stroke-opacity=".1"/>
+  <circle cx="800" cy="348" r="174" fill="none" stroke="#96f0e8" stroke-opacity=".13" stroke-dasharray="3 10"/>
+  <circle cx="800" cy="348" r="96" fill="#092c39" stroke="#96f0e8" stroke-opacity=".45"/>
+  <text x="800" y="335" fill="#dff9f8" font-family="ui-monospace,monospace" font-size="15" letter-spacing="3" text-anchor="middle">MODEL</text>
+  <text x="800" y="366" fill="#96f0e8" fill-opacity=".72" font-family="ui-monospace,monospace" font-size="11" letter-spacing="2" text-anchor="middle">RUN 7F3A2C</text>
+  <g fill="none" stroke="#96f0e8" stroke-opacity=".3">
+    <path d="M245 180C450 180 550 280 704 326"/>
+    <path d="M245 348H704"/>
+    <path d="M245 516C450 516 550 416 704 370"/>
+    <path d="M896 326C1050 280 1150 180 1355 180"/>
+    <path d="M896 348H1355"/>
+    <path d="M896 370C1050 416 1150 516 1355 516"/>
+  </g>
+  <g font-family="ui-monospace,monospace" font-size="12" letter-spacing="2">
+    <g transform="translate(130 145)"><rect width="230" height="70" fill="#061923" stroke="#96f0e8" stroke-opacity=".25"/><text x="18" y="29" fill="#96f0e8" fill-opacity=".58">01 / DATASET</text><text x="18" y="51" fill="#e8ffff" fill-opacity=".78">3.1M RECORDS</text></g>
+    <g transform="translate(130 313)"><rect width="230" height="70" fill="#061923" stroke="#96f0e8" stroke-opacity=".25"/><text x="18" y="29" fill="#96f0e8" fill-opacity=".58">02 / TOKENIZER</text><text x="18" y="51" fill="#e8ffff" fill-opacity=".78">VOCAB 32,768</text></g>
+    <g transform="translate(130 481)"><rect width="230" height="70" fill="#061923" stroke="#96f0e8" stroke-opacity=".25"/><text x="18" y="29" fill="#96f0e8" fill-opacity=".58">03 / CONTRACT</text><text x="18" y="51" fill="#e8ffff" fill-opacity=".78">CONFIG + SEED</text></g>
+    <g transform="translate(1240 145)"><rect width="230" height="70" fill="#061923" stroke="#96f0e8" stroke-opacity=".25"/><text x="18" y="29" fill="#96f0e8" fill-opacity=".58">04 / TRAINING</text><text x="18" y="51" fill="#e8ffff" fill-opacity=".78">STEP 42K</text></g>
+    <g transform="translate(1240 313)"><rect width="230" height="70" fill="#061923" stroke="#96f0e8" stroke-opacity=".25"/><text x="18" y="29" fill="#96f0e8" fill-opacity=".58">05 / EVALUATION</text><text x="18" y="51" fill="#e8ffff" fill-opacity=".78">CONTEXT SAVED</text></g>
+    <g transform="translate(1240 481)"><rect width="230" height="70" fill="#101d22" stroke="#ebd0a4" stroke-opacity=".5"/><text x="18" y="29" fill="#ebd0a4" fill-opacity=".78">06 / ARTIFACT</text><text x="18" y="51" fill="#fff5df" fill-opacity=".85">LINEAGE SIGNED</text></g>
+  </g>
+  <g fill="#96f0e8"><circle cx="704" cy="326" r="4"/><circle cx="704" cy="348" r="4"/><circle cx="704" cy="370" r="4"/><circle cx="896" cy="326" r="4"/><circle cx="896" cy="348" r="4"/><circle cx="896" cy="370" r="4"/></g>
+  <text x="70" y="665" fill="#96f0e8" fill-opacity=".42" font-family="ui-monospace,monospace" font-size="10" letter-spacing="3">WHETSTONE / PROVENANCE GRAPH / CONTENT-ADDRESSED EXECUTION</text>
+  <text x="1530" y="665" fill="#ebd0a4" fill-opacity=".62" font-family="ui-monospace,monospace" font-size="10" letter-spacing="3" text-anchor="end">7 / 7 RESOLVED</text>
+</svg>
