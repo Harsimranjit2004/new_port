@@ -15,3 +15,26 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+.global-orb-panel nav {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1.1rem;
+}
+
+.global-orb-panel nav a {
+  display: flex;
+  min-height: 2.2rem;
+  align-items: center;
+  padding-block: 0.45rem;
+  color: rgb(170 239 237 / 0.86);
+  border-top: 1px solid rgb(170 239 237 / 0.1);
+  font: 500 9px/1.4 ui-monospace, monospace;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.global-orb-panel nav a:hover {
+  color: rgb(235 208 164 / 0.96);
+}

@@ -21,7 +21,7 @@ export default function ContactPage() {
   return (
     <main className="contact-page">
       <Navbar submergedAt={0} />
-      <div className="contact-depth" aria-hidden="true"><i /><i /><i /></div>
+
 
       <div className="contact-shell">
         <div className="contact-rail">
