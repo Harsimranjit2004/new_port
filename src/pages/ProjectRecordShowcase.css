@@ -123,9 +123,21 @@
 }
 
 @media (max-width: 720px) {
+  .project-showcase {
+    padding-inline: 1rem;
+  }
+
   .project-showcase__project {
+    width: 100%;
+    min-width: 0;
     min-height: auto;
-    padding: 5rem 1.5rem 7rem;
+    margin-bottom: 1.25rem;
+    padding: 1.25rem 1rem 1rem;
+    overflow: hidden;
+    border: 1px solid rgb(var(--showcase-aqua) / 0.18);
+    border-radius: 20px;
+    background: rgb(3 24 34 / 0.24);
+    box-shadow: inset 0 1px rgb(230 255 253 / 0.025);
   }
 
   .project-showcase__rail {
@@ -150,7 +162,66 @@
   }
 
   .project-showcase__artifact.project-record {
-    margin-top: 2.25rem;
+    width: 100%;
+    min-width: 0;
+    margin-top: 1.75rem;
+  }
+
+  .project-showcase__artifact .project-record__terminal {
+    width: 100%;
+    min-width: 0;
+    border-radius: 12px;
+  }
+
+  .project-showcase__artifact .project-record__pipeline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    overflow: visible;
+    padding: 0.75rem;
+  }
+
+  .project-showcase__artifact .project-record__pipeline-step {
+    min-width: 0;
+  }
+
+  .project-showcase__artifact .project-record__pipeline-step > span {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .project-showcase__artifact .project-record__pipeline-step i {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-showcase { padding-inline: 0.65rem; }
+
+  .project-showcase__project {
+    padding: 1rem 0.75rem 0.75rem;
+    border-radius: 16px;
+  }
+
+  .project-showcase h2 {
+    margin-top: 1.4rem;
+    font-size: clamp(1.8rem, 10vw, 2.3rem);
+  }
+
+  .project-showcase__question {
+    max-width: none;
+    margin-top: 1rem;
+  }
+
+  .project-showcase__open-record {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .project-showcase__artifact .project-record__pipeline {
+    grid-template-columns: 1fr;
   }
 }
 
