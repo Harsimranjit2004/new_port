@@ -11,11 +11,6 @@ function Icon({ name }: { name: 'github' | 'linkedin' | 'mail' | 'file' | 'arrow
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>
 }
 
-const latestNotes = [
-  { title: 'Why the tokenizer needed a native backend', date: '11 Aug', href: '/field-notes/tokenizer-native-backend' },
-  { title: 'Run 7f3a2c and the six weeks a README bought me', date: '02 Aug', href: '/field-notes' },
-  { title: 'On writing the failed attempt down', date: '02 Jun', href: '/field-notes' },
-]
 
 export default function Footer() {
   return (
@@ -31,7 +26,7 @@ export default function Footer() {
               <a href="https://github.com/"><Icon name="github" /><span>GitHub</span></a>
               <a href="https://www.linkedin.com/"><Icon name="linkedin" /><span>LinkedIn</span></a>
               <a href="mailto:hello@example.com"><Icon name="mail" /><span>Email</span></a>
-              <span className="site-footer__resume"><Icon name="file" /><span>Résumé on request</span></span>
+              <a className="site-footer__resume" href="mailto:hello@example.com?subject=R%C3%A9sum%C3%A9%20request"><Icon name="file" /><span>Request résumé</span></a>
             </nav>
           </section>
 
@@ -48,18 +43,15 @@ export default function Footer() {
 
           <section className="site-footer__notes" aria-labelledby="footer-notes-title">
             <div className="site-footer__notes-head">
-              <p id="footer-notes-title" className="site-footer__label">Latest Field Notes</p>
-              <a href="/field-notes">All notes <Icon name="arrow" /></a>
+              <p id="footer-notes-title" className="site-footer__label">Field Note</p>
+              <a href="/field-notes">Archive <Icon name="arrow" /></a>
             </div>
-            <div className="site-footer__note-list">
-              {latestNotes.map((note) => (
-                <a href={note.href} key={note.title}>
-                  <span>{note.date}</span>
-                  <strong>{note.title}</strong>
-                  <Icon name="arrow" />
-                </a>
-              ))}
-            </div>
+            <a className="site-footer__field-card" href="/field-notes/tokenizer-native-backend">
+              <span>11 Aug · Whetstone</span>
+              <strong>Why the tokenizer needed a native backend</strong>
+              <p>Python defined the behaviour correctly. It just could not train fast enough to be the whole story.</p>
+              <small>4 min read <Icon name="arrow" /></small>
+            </a>
             <a className="site-footer__contact-signal" href="/contact"><i aria-hidden="true" /> Channel open · Start a conversation <Icon name="arrow" /></a>
           </section>
         </div>
