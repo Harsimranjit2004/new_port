@@ -129,9 +129,19 @@
   }
 
   .project-showcase__rail {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     gap: 0.6rem;
     font-size: 8.5px;
     letter-spacing: 0.09em;
+    white-space: normal;
+  }
+
+  .project-showcase__rule { min-width: 1rem; }
+
+  .project-showcase__rail > span:last-child {
+    grid-column: 1 / -1;
+    color: rgb(198 226 230 / 0.5);
   }
 
   .project-showcase__open-record {

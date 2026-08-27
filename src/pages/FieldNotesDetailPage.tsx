@@ -1,3 +1,4 @@
+import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
 import './FieldNotesDetailPage.css'
 
@@ -54,6 +55,7 @@ export default function FieldNotesDetailPage() {
           </a>
         </nav>
       </article>
+      <Footer />
     </main>
   )
 }

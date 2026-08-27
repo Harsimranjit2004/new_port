@@ -63,7 +63,7 @@ const styles = `
 .portable-ocean-nav__name span { color: #0b3c5d; }
 .portable-ocean-nav.is-submerged .portable-ocean-nav__name span { color: #9ff7f1; }
 .portable-ocean-nav nav { display: flex; align-items: center; gap: clamp(18px,3vw,38px); padding-right: 18px; }
-.portable-ocean-nav nav a { position: relative; color: #45566b; font: 500 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: color .25s ease; }
+.portable-ocean-nav nav a { position: relative; display: inline-flex; min-height: 44px; align-items: center; color: #45566b; font: 500 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: color .25s ease; }
 .portable-ocean-nav.is-submerged nav a { color: rgba(220,246,245,.72); }
 .portable-ocean-nav nav a::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -7px; height: 1px; background: currentColor; transition: right .25s ease; }
 .portable-ocean-nav nav a:hover::after, .portable-ocean-nav nav a:focus-visible::after { right: 0; }
@@ -73,19 +73,24 @@ const styles = `
 @media (max-width: 800px) {
   .portable-ocean-nav { top: 16px; width: calc(100% - 24px) !important; height: 58px; transform: translateX(-50%); }
   .portable-ocean-nav__name { display: none; }
-  .portable-ocean-nav nav { gap: clamp(12px,3vw,22px); padding-right: 8px; }
+  .portable-ocean-nav nav { gap: clamp(9px,2.5vw,18px); padding-right: 8px; }
   .portable-ocean-nav nav a { font-size: 8px; }
 }
 @media (max-width: 500px) {
-  .portable-ocean-nav nav { gap: 13px; }
-  .portable-ocean-nav nav a { letter-spacing: .07em; }
-  .portable-ocean-nav nav a:first-child { display: none; }
+  .portable-ocean-nav__mark { width: 42px; height: 42px; flex-basis: 42px; }
+  .portable-ocean-nav nav { gap: 8px; }
+  .portable-ocean-nav nav a { font-size: 7.5px; letter-spacing: .045em; }
+}
+@media (max-width: 380px) {
+  .portable-ocean-nav { width: calc(100% - 12px) !important; }
+  .portable-ocean-nav nav { gap: 6px; }
+  .portable-ocean-nav nav a { font-size: 7px; letter-spacing: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .portable-ocean-nav { transition: none; } }
 `
 
 export default function Navbar({
-  brand = 'harsimranjit',
+  brand = 'Harsimranjit',
   monogram = 'h.',
   homeHref = '/',
   items = defaultItems,

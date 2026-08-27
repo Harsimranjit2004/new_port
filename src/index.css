@@ -10,6 +10,19 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  max-width: 100%;
+  min-height: 100%;
+}
+
+img,
+svg,
+canvas {
+  max-width: 100%;
+}
+
 body {
   margin: 0;
   min-width: 320px;

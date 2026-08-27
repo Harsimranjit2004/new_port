@@ -184,9 +184,28 @@ html[data-motion-paused] .surface-reflection {
     margin-inline: 0.25rem;
   }
 
+  .hero-type__line--disciplines {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 95vw;
+    row-gap: 0.45rem;
+    white-space: normal;
+  }
+
   .white-surface h1 {
     font-size: clamp(2.5rem, 13vw, 5.25rem);
     letter-spacing: 0.005em;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-type__line--disciplines .expertise-separator {
+    display: none;
+  }
+
+  .hero-type__line--disciplines .expertise-entry {
+    width: 100%;
   }
 }
 

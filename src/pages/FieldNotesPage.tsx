@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
 import './FieldNotesPage.css'
 
@@ -72,6 +73,7 @@ export default function FieldNotesPage() {
           <a href="/work" className="fn-link">See the projects →</a>
         </footer>
       </section>
+      <Footer />
     </main>
   )
 }

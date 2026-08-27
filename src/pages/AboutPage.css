@@ -38,7 +38,7 @@
 .about-dc-map > div { display: flex; align-items: center; gap: 1.1rem; }
 .about-dc-map div i { width: 2.5rem; height: 1px; background: rgb(150 240 232 / .22); }
 .about-dc-map strong { padding: .6rem 1rem; color: rgb(238 255 255 / .94); border: 1px solid rgb(150 240 232 / .4); font-size: 12px; font-weight: 500; }
-.about-dc-action { display: block; width: fit-content; margin: 2.5rem auto 0; padding-bottom: .3rem; border-bottom: 1px solid rgb(150 240 232 / .35); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; }
+.about-dc-action { display: flex; width: fit-content; min-height: 44px; align-items: center; margin: 2.5rem auto 0; padding-bottom: .3rem; border-bottom: 1px solid rgb(150 240 232 / .35); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; }
 
 .about-dc-ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4rem clamp(4rem, 10vw, 8rem); margin-top: 2.5rem; }
 .about-dc-ways h2 { max-width: 22em; margin: 0; font-size: clamp(1.7rem, 3.4vw, 2rem); font-weight: 300; line-height: 1.24; letter-spacing: -.02em; }
@@ -112,6 +112,11 @@
   .about-dc-curiosities > div { grid-template-columns: 1fr; gap: .35rem; }
   .about-dc-curiosities i { display: none; }
   .about-dc-observations a { grid-template-columns: 1fr auto; }
+  .about-dc-links a,
+  .about-dc-end a { display: inline-flex; min-height: 44px; align-items: center; }
+  .about-dc-stack,
+  .about-dc-links,
+  .about-dc-depth strong { overflow-wrap: anywhere; }
   .about-dc-observations time { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) { .about-dc-root * { transition: none !important; } }

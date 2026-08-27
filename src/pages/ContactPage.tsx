@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
 import './ContactPage.css'
 
@@ -89,6 +90,7 @@ export default function ContactPage() {
           <a href="/">Return to surface ↑</a>
         </footer>
       </div>
+      <Footer />
     </main>
   )
 }

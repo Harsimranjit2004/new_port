@@ -178,8 +178,8 @@
   }
 
   .work-page__intro h1 {
-    font-size: clamp(2rem, 10.8vw, 4.6rem);
-    letter-spacing: -0.055em;
+    font-size: clamp(1.8rem, 9.2vw, 4.2rem);
+    letter-spacing: -0.06em;
   }
 
   .work-page__intro-note {

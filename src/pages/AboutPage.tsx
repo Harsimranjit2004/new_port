@@ -1,3 +1,4 @@
+import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
 import './AboutPage.css'
 
@@ -141,6 +142,7 @@ export default function AboutPage() {
           <nav><a href="/contact">Contact ↗</a><a href="/work">Projects ↗</a><a href="/field-notes">Field Notes ↗</a></nav>
         </section>
       </div>
+      <Footer />
     </main>
   )
 }

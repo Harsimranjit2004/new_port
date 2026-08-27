@@ -19,7 +19,7 @@
 .fn-count { margin: 1.5rem 0 0; color: rgb(198 226 230 / .7); font: 500 10px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .2em; text-transform: uppercase; }
 
 .fn-tags { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2rem; padding-bottom: 2.1rem; }
-.fn-tags button { padding: .45rem .8rem; color: rgb(198 226 230 / .66); border: 1px solid rgb(150 240 232 / .16); background: transparent; font: 500 9px/1 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .14em; cursor: pointer; transition: border-color 160ms ease, color 160ms ease; }
+.fn-tags button { min-height: 42px; padding: .55rem .85rem; color: rgb(198 226 230 / .66); border: 1px solid rgb(150 240 232 / .16); background: transparent; font: 500 9px/1 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .14em; cursor: pointer; transition: border-color 160ms ease, color 160ms ease; }
 .fn-tags button:hover,
 .fn-tags button.is-active { color: rgb(238 255 255 / .95); border-color: rgb(150 240 232 / .55); }
 
@@ -52,6 +52,8 @@
 @media (max-width: 620px) {
   .fn-root { padding-top: 7rem; }
   .fn-header h1 { font-size: 2.35rem; }
+  .fn-tags { flex-wrap: nowrap; margin-right: -1.5rem; padding-right: 1.5rem; overflow-x: auto; scrollbar-width: thin; }
+  .fn-tags button { flex: 0 0 auto; }
   .fn-row { grid-template-columns: 1fr; gap: .55rem; padding-block: 1.6rem; }
   .fn-tag-label,
   .fn-copy,
