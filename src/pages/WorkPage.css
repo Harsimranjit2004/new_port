@@ -165,6 +165,115 @@
   line-height: 1.55;
 }
 
+.work-explorations {
+  width: min(calc(100% - 6rem), 82rem);
+  margin-inline: auto;
+  padding: clamp(6rem, 12vh, 10rem) 0 clamp(8rem, 14vh, 12rem);
+  color: rgb(238 255 255 / 0.94);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.work-explorations__head {
+  display: grid;
+  grid-template-columns: 1fr minmax(17rem, 0.55fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  align-items: end;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgb(190 252 247 / 0.18);
+}
+
+.work-explorations__head span,
+.work-exploration-card__meta,
+.work-exploration-card__signal,
+.work-exploration-card footer {
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  text-transform: uppercase;
+}
+
+.work-explorations__head span {
+  color: rgb(235 208 164 / 0.76);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+}
+
+.work-explorations__head h2 {
+  margin: 1rem 0 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 350;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.work-explorations__head p {
+  margin: 0;
+  color: rgb(210 237 240 / 0.6);
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+.work-explorations__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.work-exploration-card {
+  display: grid;
+  grid-template-rows: auto minmax(12rem, 1fr) auto auto;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(190 252 247 / 0.17);
+  border-radius: 18px;
+  background: rgb(3 24 34 / 0.26);
+  box-shadow: inset 0 1px rgb(230 255 253 / 0.025);
+}
+
+.work-exploration-card__meta {
+  display: grid;
+  grid-template-columns: auto auto minmax(1rem, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  color: rgb(198 226 230 / 0.5);
+  border-bottom: 1px solid rgb(190 252 247 / 0.1);
+  font-size: 7.5px;
+  letter-spacing: 0.11em;
+}
+
+.work-exploration-card__meta > span:first-child { color: rgb(235 208 164 / 0.82); }
+.work-exploration-card__meta i { height: 1px; background: rgb(190 252 247 / 0.13); }
+
+.work-exploration-card__body { padding: clamp(1.5rem, 4vw, 2.5rem); }
+.work-exploration-card__body h3 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 380; line-height: 1; letter-spacing: -0.04em; overflow-wrap: anywhere; }
+.work-exploration-card__body p { max-width: 35ch; margin: 1.4rem 0 0; color: rgb(215 240 241 / 0.66); font-size: 0.95rem; font-weight: 300; line-height: 1.55; }
+
+.work-exploration-card__signal {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  color: rgb(150 240 232 / 0.68);
+  border-block: 1px solid rgb(190 252 247 / 0.09);
+  font-size: 7.5px;
+  letter-spacing: 0.08em;
+  scrollbar-width: thin;
+}
+
+.work-exploration-card__signal > span { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 0.6rem; }
+.work-exploration-card__signal i { color: rgb(198 226 230 / 0.3); font-style: normal; }
+.work-exploration-card footer { display: flex; justify-content: space-between; gap: 1rem; padding: 0.85rem 1rem; color: rgb(198 226 230 / 0.38); font-size: 7.5px; letter-spacing: 0.09em; }
+.work-exploration-card footer span:last-child { color: rgb(150 240 232 / 0.62); }
+
+@media (max-width: 900px) {
+  .work-explorations { width: calc(100% - 3rem); }
+  .work-explorations__head { grid-template-columns: 1fr; gap: 1.5rem; }
+  .work-exploration-card { grid-template-rows: auto minmax(10rem, 1fr) auto auto; }
+}
+
 @media (max-width: 720px) {
   .work-page__intro {
     min-height: 82svh;
@@ -192,6 +301,17 @@
     right: -55%;
     width: 100vw;
   }
+
+  .work-explorations__grid { grid-template-columns: 1fr; }
+  .work-exploration-card { grid-template-rows: auto auto auto auto; }
+  .work-exploration-card__meta { grid-template-columns: auto 1fr auto; }
+  .work-exploration-card__meta i { display: none; }
+  .work-exploration-card__meta > span:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 420px) {
+  .work-exploration-card__meta { grid-template-columns: 1fr; gap: 0.4rem; }
+  .work-exploration-card__body { padding: 1.35rem 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
