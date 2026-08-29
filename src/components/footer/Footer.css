@@ -35,22 +35,28 @@
 
 .site-footer__identity {
   display: flex;
-  min-height: 14rem;
+  min-height: 17rem;
   flex-direction: column;
   justify-content: space-between;
   padding: 0;
 }
 
-.site-footer__name { margin: 0; font-size: clamp(1.8rem, 3vw, 2.7rem); font-weight: 350; letter-spacing: -.045em; }
-.site-footer__role { margin: .7rem 0 0; color: rgb(198 226 230 / .56); font: 500 8.5px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .16em; text-transform: uppercase; }
+.site-footer__identity-heading { display: flex; align-items: center; gap: 1rem; }
+.site-footer__terminal { display: grid; width: 3.6rem; height: 3.6rem; place-items: center; flex: 0 0 3.6rem; color: #06242f; border-radius: 16px; background: rgb(var(--footer-aqua) / .86); font: 700 1.15rem/1 ui-monospace, monospace; }
+.site-footer__name { margin: 0; font-size: clamp(1.8rem, 3vw, 2.55rem); font-weight: 650; letter-spacing: -.05em; }
+.site-footer__name span { color: rgb(var(--footer-aqua) / .9); }
+.site-footer__role { margin: .4rem 0 0; color: rgb(198 226 230 / .62); font: 500 8.5px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .15em; text-transform: uppercase; }
+.site-footer__intro { max-width: 24rem; margin: 1.6rem 0 0; color: rgb(198 226 230 / .56); font-size: .95rem; font-weight: 300; line-height: 1.65; }
+.site-footer__availability { display: inline-flex; width: fit-content; min-height: 2.4rem; align-items: center; gap: .65rem; margin-top: 1.3rem; padding: .55rem 1rem; color: rgb(var(--footer-aqua) / .82); border: 1px solid rgb(var(--footer-aqua) / .22); border-radius: 999px; background: rgb(var(--footer-aqua) / .04); font-size: .78rem; }
+.site-footer__availability i { width: 7px; height: 7px; border-radius: 50%; background: rgb(var(--footer-aqua) / .9); box-shadow: 0 0 12px rgb(var(--footer-aqua) / .3); }
 .site-footer__label { margin: 0; color: rgb(var(--footer-sand) / .72); font: 500 8.5px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .16em; text-transform: uppercase; }
 
-.site-footer__social { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem .8rem; }
-.site-footer__social a,
-.site-footer__resume { display: inline-flex; min-height: 42px; align-items: center; gap: .65rem; color: rgb(198 226 230 / .66); font-size: .78rem; font-weight: 300; }
-.site-footer__social a:hover { color: rgb(var(--footer-aqua) / .95); }
-.site-footer__resume { width: fit-content; min-height: 42px; padding: .6rem .8rem; color: rgb(225 248 248 / .72); border: 1px solid rgb(var(--footer-aqua) / .22); background: transparent; transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease; }
-.site-footer__resume:hover { color: #fff !important; border-color: rgb(var(--footer-aqua) / .65); background: rgb(var(--footer-aqua) / .04); }
+.site-footer__social { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1.8rem; }
+.site-footer__social a { display: inline-grid; width: 3rem; height: 3rem; place-items: center; color: rgb(198 226 230 / .6); border: 1px solid rgb(var(--footer-aqua) / .16); border-radius: 11px; background: rgb(255 255 255 / .012); transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 180ms ease; }
+.site-footer__social a:not(.site-footer__resume) span { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.site-footer__social a:hover { color: rgb(var(--footer-aqua) / .95); border-color: rgb(var(--footer-aqua) / .42); background: rgb(var(--footer-aqua) / .05); transform: translateY(-2px); }
+.site-footer__social .site-footer__resume { display: inline-flex; width: auto; min-width: 10.5rem; height: 3rem; justify-content: center; gap: .7rem; padding: 0 1.1rem; color: rgb(230 251 249 / .82); font: 500 9px/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.site-footer__resume:hover { color: #fff !important; border-color: rgb(var(--footer-aqua) / .65) !important; background: rgb(var(--footer-aqua) / .08) !important; }
 
 .site-footer__navigation { padding: 0; }
 .site-footer__navigation > nav { display: grid; margin-top: 1.25rem; }

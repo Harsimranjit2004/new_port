@@ -75,14 +75,17 @@
   right: 0;
   bottom: 0;
   display: inline-flex;
+  width: 11.5625rem;
   min-height: 2.75rem;
   align-items: center;
+  justify-content: space-between;
   gap: 0.9rem;
-  padding: 0.7rem 0.9rem 0.7rem 1rem;
-  color: rgb(238 255 255 / 0.92);
-  border: 1px solid rgb(238 255 255 / 0.42);
-  border-radius: 2px;
-  background: transparent;
+  padding: 1.125rem 1.5rem;
+  color: #dff8f7;
+  border: 1px solid rgb(160 235 235 / 0.45);
+  border-radius: 12px;
+  background: rgb(4 47 60 / 0.28);
+  backdrop-filter: blur(8px);
   font: 600 10px/1.4 ui-monospace, "JetBrains Mono", monospace;
   letter-spacing: 0.12em;
   text-decoration: none;
@@ -93,15 +96,15 @@
 
 
 .project-showcase__open-record span {
-  color: rgb(238 255 255 / 0.92);
+  color: #dff8f7;
   font-size: 13px;
   transition: transform 220ms ease;
 }
 
 .project-showcase__open-record:hover {
-  color: #ffffff;
-  border-color: rgb(255 255 255 / 0.82);
-  background: transparent;
+  color: #efffff;
+  border-color: rgb(160 235 235 / 0.72);
+  background: rgb(135 222 224 / 0.18);
   transform: translateY(-2px);
 }
 

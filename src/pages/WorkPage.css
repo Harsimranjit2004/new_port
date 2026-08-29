@@ -10,8 +10,8 @@
 .work-page__intro {
   position: relative;
   display: grid;
-  min-height: 92vh;
-  min-height: 92svh;
+  min-height: 100vh;
+  min-height: 100svh;
   align-content: center;
   padding: 9rem max(3rem, calc((100vw - 82rem) / 2)) 5rem;
   overflow: hidden;
@@ -21,6 +21,7 @@
 
 .work-page__intro::before,
 .work-page__intro::after {
+  display: none;
   content: '';
   position: absolute;
   pointer-events: none;
@@ -81,11 +82,12 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  padding-bottom: clamp(1rem, 2.5vh, 2rem);
+  padding-bottom: 0;
   overflow: hidden;
 }
 
 .work-page__title-reveal::after {
+  display: none;
   content: '';
   position: absolute;
   right: 0;
@@ -102,10 +104,10 @@
   width: 100%;
   margin: 0;
   color: rgb(238 255 255 / 0.98);
-  font-size: clamp(3.1rem, 8.15vw, 8rem);
-  font-weight: 620;
-  line-height: 0.88;
-  letter-spacing: -0.065em;
+  font-size: clamp(3.75rem, 9vw, 9rem);
+  font-weight: 650;
+  line-height: 0.84;
+  letter-spacing: 0.025em;
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
@@ -276,7 +278,7 @@
 
 @media (max-width: 720px) {
   .work-page__intro {
-    min-height: 82svh;
+    min-height: 100svh;
     padding: 8rem 1.5rem 4rem;
   }
 
@@ -287,8 +289,8 @@
   }
 
   .work-page__intro h1 {
-    font-size: clamp(1.8rem, 9.2vw, 4.2rem);
-    letter-spacing: -0.06em;
+    font-size: clamp(1.8rem, 8.4vw, 4.2rem);
+    letter-spacing: 0.005em;
   }
 
   .work-page__intro-note {

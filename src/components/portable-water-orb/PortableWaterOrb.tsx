@@ -75,7 +75,7 @@ const styles = `
 .portable-water-orb__button{position:relative;width:100%;height:100%;padding:0;border:0;border-radius:50%;cursor:pointer;background:transparent;filter:drop-shadow(0 8px 13px rgba(0,73,119,.3));transition:transform .3s ease}
 .portable-water-orb__button:hover{transform:scale(1.035)}
 .portable-water-orb__button:focus-visible{outline:2px solid #6fd6d6;outline-offset:7px}
-.portable-water-orb__canvas{position:absolute;inset:-13%;width:126%;height:126%}
+.portable-water-orb__canvas{position:absolute;inset:-13%;width:126%;height:126%;max-width:none;max-height:none;aspect-ratio:1/1}
 .portable-water-orb__label{position:absolute;right:calc(100% + 5px);top:50%;width:max-content;padding:7px 10px;color:#071a2e;border:1px solid rgba(7,26,46,.08);border-radius:999px;background:rgba(246,248,250,.82);box-shadow:0 8px 24px rgba(7,26,46,.08);backdrop-filter:blur(12px);font:600 10px ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;transform:translateY(-50%);transition:opacity .25s ease}
 .portable-water-orb.is-open .portable-water-orb__label{opacity:0}
 .portable-water-orb__panel{position:absolute;right:4px;bottom:calc(100% + 20px);width:min(320px,calc(100vw - 36px));padding:22px;color:#eaffff;border:1px solid rgba(170,239,237,.2);border-radius:20px 20px 5px 20px;background:rgba(4,42,55,.94);box-shadow:0 25px 70px rgba(0,12,18,.5);backdrop-filter:blur(18px);opacity:0;visibility:hidden;transform:translateY(12px) scale(.97);transform-origin:bottom right;transition:.28s ease}

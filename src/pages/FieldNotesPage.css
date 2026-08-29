@@ -1,44 +1,38 @@
-.fn-page {
-  min-height: 100vh;
-  color: rgb(238 255 255 / .95);
-  background: linear-gradient(180deg, #0a3949 0%, #072b39 20%, #06212e 46%, #041a25 72%, #03121a 100%);
-  font-family: Inter, system-ui, sans-serif;
-}
-
+.fn-page { min-height: 100vh; color: #0b2431; background: rgb(85 201 220); font-family: Inter, system-ui, sans-serif; }
 .fn-root { width: min(calc(100% - 6rem), 56.25rem); margin-inline: auto; padding-top: 8rem; }
-.fn-link { color: rgb(150 240 232 / .9); text-decoration: none; transition: color 160ms ease; }
-.fn-link:hover { color: rgb(235 208 164 / .96); }
+.fn-link { color: #123f4e; text-decoration: none; transition: color 160ms ease; }
+.fn-link:hover { color: #061d29; }
 .fn-link:focus-visible,
-.fn-tags button:focus-visible { outline: 1px solid rgb(235 208 164 / .9); outline-offset: 3px; }
+.fn-tags button:focus-visible { outline: 2px solid #0a4b5a; outline-offset: 3px; }
 
-.fn-header { padding-top: 1rem; border-bottom: 1px solid rgb(150 240 232 / .16); }
-.fn-back { display: block; width: fit-content; font: 500 10px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .22em; text-transform: uppercase; }
-.fn-kicker { display: block; margin-top: 1.9rem; color: rgb(235 208 164 / .92); font: 500 11px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .3em; text-transform: uppercase; }
-.fn-header h1 { max-width: 40rem; margin: 1.25rem 0 0; font-size: clamp(2.4rem, 5vw, 3rem); font-weight: 250; line-height: 1.06; letter-spacing: -.035em; text-wrap: pretty; }
-.fn-header > p:not(.fn-count) { max-width: 35rem; margin: 1.1rem 0 0; color: rgb(210 237 240 / .78); font-size: .97rem; font-weight: 300; line-height: 1.7; text-wrap: pretty; }
-.fn-count { margin: 1.5rem 0 0; color: rgb(198 226 230 / .7); font: 500 10px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .2em; text-transform: uppercase; }
+.fn-header { padding-top: 1rem; border-bottom: 1px solid rgb(7 61 78 / .22); }
+.fn-back { display: block; width: fit-content; color: #285968; font: 600 10px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .22em; text-transform: uppercase; }
+.fn-kicker { display: block; margin-top: 1.9rem; color: #875c20; font: 650 11px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .3em; text-transform: uppercase; }
+.fn-header h1 { max-width: 40rem; margin: 1.25rem 0 0; color: #082330; font-size: clamp(2.4rem, 5vw, 3rem); font-weight: 420; line-height: 1.06; letter-spacing: -.035em; text-wrap: pretty; }
+.fn-header > p:not(.fn-count) { max-width: 35rem; margin: 1.1rem 0 0; color: #28515e; font-size: .97rem; font-weight: 400; line-height: 1.7; text-wrap: pretty; }
+.fn-count { margin: 1.5rem 0 0; color: #31616c; font: 600 10px/1.4 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .2em; text-transform: uppercase; }
 
 .fn-tags { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 2rem; padding-bottom: 2.1rem; }
-.fn-tags button { min-height: 42px; padding: .55rem .85rem; color: rgb(198 226 230 / .66); border: 1px solid rgb(150 240 232 / .16); background: transparent; font: 500 9px/1 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .14em; cursor: pointer; transition: border-color 160ms ease, color 160ms ease; }
+.fn-tags button { min-height: 42px; padding: .55rem .85rem; color: #285563; border: 1px solid rgb(7 61 78 / .24); background: rgb(255 255 255 / .12); font: 600 9px/1 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .14em; cursor: pointer; transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease; }
 .fn-tags button:hover,
-.fn-tags button.is-active { color: rgb(238 255 255 / .95); border-color: rgb(150 240 232 / .55); }
+.fn-tags button.is-active { color: #061d29; border-color: #0a5363; background: rgb(255 255 255 / .25); }
 
 .fn-list { padding-top: .5rem; }
-.fn-row { display: grid; grid-template-columns: 6rem 8.1rem minmax(0, 1fr) auto; gap: 1.4rem; align-items: baseline; padding: 1.4rem 0; color: inherit; border-top: 1px solid rgb(150 240 232 / .1); text-decoration: none; transition: opacity 160ms ease; }
+.fn-row { display: grid; grid-template-columns: 6rem 8.1rem minmax(0, 1fr) auto; gap: 1.4rem; align-items: baseline; padding: 1.4rem 0; color: inherit; border-top: 1px solid rgb(7 61 78 / .16); text-decoration: none; transition: background-color 160ms ease; }
 .fn-row:first-child { border-top: 0; }
-.fn-row:hover { opacity: .82; }
+.fn-row:hover { background: rgb(255 255 255 / .08); }
 .fn-date,
 .fn-tag-label,
 .fn-read { font-family: ui-monospace, "JetBrains Mono", monospace; text-transform: uppercase; }
-.fn-date { color: rgb(198 226 230 / .55); font-size: 9.5px; letter-spacing: .14em; }
-.fn-tag-label { color: rgb(235 208 164 / .85); font-size: 9px; letter-spacing: .16em; }
-.fn-copy strong { display: block; color: rgb(238 255 255 / .94); font-size: 1.12rem; font-weight: 400; line-height: 1.35; }
-.fn-copy > span { display: block; margin-top: .4rem; color: rgb(198 226 230 / .68); font-size: .84rem; font-weight: 300; line-height: 1.55; text-wrap: pretty; }
-.fn-read { color: rgb(198 226 230 / .5); font-size: 9.5px; letter-spacing: .12em; white-space: nowrap; }
+.fn-date { color: #3b6873; font-size: 9.5px; font-weight: 600; letter-spacing: .14em; }
+.fn-tag-label { color: #75501e; font-size: 9px; font-weight: 650; letter-spacing: .16em; }
+.fn-copy strong { display: block; color: #092531; font-size: 1.12rem; font-weight: 550; line-height: 1.35; }
+.fn-copy > span { display: block; margin-top: .4rem; color: #315b66; font-size: .84rem; font-weight: 400; line-height: 1.55; text-wrap: pretty; }
+.fn-read { color: #376671; font-size: 9.5px; font-weight: 600; letter-spacing: .12em; white-space: nowrap; }
 .fn-read i { display: inline-block; margin-left: .35rem; font-style: normal; transition: transform 160ms ease; }
 .fn-row:hover .fn-read i { transform: translate(3px, -2px); }
 
-.fn-end { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.25rem; padding: 4.75rem 0 7.5rem; color: rgb(198 226 230 / .7); font: 500 10px/1.5 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .18em; text-transform: uppercase; }
+.fn-end { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.25rem; padding: 4.75rem 0 7.5rem; color: #34616d; font: 600 10px/1.5 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .18em; text-transform: uppercase; }
 .fn-end .fn-link { font-family: Inter, system-ui, sans-serif; font-size: .875rem; letter-spacing: 0; text-transform: none; }
 
 @media (max-width: 900px) {
@@ -64,6 +58,19 @@
   .fn-read { order: 4; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fn-page * { transition: none !important; }
-}
+/* Ocean-page color treatment */
+.fn-page { color: rgb(244 255 255 / .96); background: #2b8098; }
+.fn-link { color: rgb(226 255 253 / .94); }
+.fn-link:hover { color: #fff; }
+.fn-back { color: rgb(225 251 250 / .82); }
+.fn-kicker,.fn-tag-label { color: rgb(255 226 178 / .96); }
+.fn-header { border-bottom-color: rgb(220 255 252 / .28); }
+.fn-header h1,.fn-copy strong { color: #f7ffff; }
+.fn-header > p:not(.fn-count),.fn-copy > span { color: rgb(239 255 255 / .84); }
+.fn-count,.fn-date,.fn-read,.fn-end { color: rgb(232 253 253 / .76); }
+.fn-tags button { color: rgb(239 255 255 / .84); border-color: rgb(230 255 253 / .3); background: rgb(3 47 62 / .08); }
+.fn-tags button:hover,.fn-tags button.is-active { color: #fff; border-color: rgb(240 255 254 / .72); background: rgb(3 47 62 / .2); }
+.fn-row { border-top-color: rgb(220 255 252 / .2); }
+.fn-row:hover { background: rgb(3 47 62 / .1); }
+
+@media (prefers-reduced-motion: reduce) { .fn-page * { transition: none !important; } }

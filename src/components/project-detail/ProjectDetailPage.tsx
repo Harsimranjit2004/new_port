@@ -64,7 +64,11 @@ function DefaultHeroVisual({ project }: { project: ProjectDetailConfig }) {
 
 export default function ProjectDetailPage({ project }: { project: ProjectDetailConfig }) {
   const sectionLinks = [
-    ['01', 'Problem'], ['02', 'System'], ['03', 'Build'], ['04', 'Evidence'], ['05', 'Notes'],
+    ['01', 'Problem', 'problem'],
+    ['02', 'System', 'system'],
+    ['03', 'Build', 'build'],
+    ['04', 'Evidence', 'evidence'],
+    ['05', 'Field notes', 'notes'],
   ]
   const [activeSection, setActiveSection] = useState('problem')
 
@@ -101,7 +105,7 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
             <nav className="pd-hero__links" aria-label="Project resources">
               <a href="#build">Live systems ↗</a>
               <a href="#evidence">Evidence ↘</a>
-              <a href="#notes">Notes ↗</a>
+              <a href="#notes">Field notes ↗</a>
             </nav>
           </header>
 
@@ -118,10 +122,9 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
           <div className="pd-layout">
             <aside className="pd-contents">
               <span>Contents</span>
-              <nav>{sectionLinks.map(([number, label]) => {
-                const id = label.toLowerCase()
-                return <a className={activeSection === id ? 'is-active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={number}><b>{number}</b>{label}</a>
-              })}</nav>
+              <nav>{sectionLinks.map(([number, label, id]) => (
+                <a className={activeSection === id ? 'is-active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={number}><b>{number}</b>{label}</a>
+              ))}</nav>
 
             </aside>
 
@@ -173,8 +176,8 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
                 <div className="pd-checks"><span>Verification</span>{project.evidence.checks.map((check) => <div key={check}><span>{check}</span><strong>Pass</strong></div>)}</div>
               </section>
 
-              <section id="notes" className="pd-notes">
-                <h2>Related field notes</h2>
+              <section id="notes" className="pd-section pd-notes">
+                <div className="pd-section__copy"><span>05</span><div><h2>Related field notes</h2><p>Observations, decisions, and details recorded alongside the build.</p></div></div>
                 <div>{project.notes.map((note) => <a href={note.href} key={note.title}><strong>{note.title}</strong><span>{note.meta} ↗</span></a>)}</div>
               </section>
 

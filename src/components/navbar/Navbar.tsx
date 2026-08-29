@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useRef, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 export type NavigationItem = { label: string; href: string }
 
@@ -62,6 +62,7 @@ const styles = `
 .portable-ocean-nav.is-submerged .portable-ocean-nav__mark { color: #082b38; background: rgba(159,247,241,.9); }
 .portable-ocean-nav__name span { color: #0b3c5d; }
 .portable-ocean-nav.is-submerged .portable-ocean-nav__name span { color: #9ff7f1; }
+.portable-ocean-nav__menu-button { display: none; }
 .portable-ocean-nav nav { display: flex; align-items: center; gap: clamp(18px,3vw,38px); padding-right: 18px; }
 .portable-ocean-nav nav a { position: relative; display: inline-flex; min-height: 44px; align-items: center; color: #45566b; font: 500 10px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; transition: color .25s ease; }
 .portable-ocean-nav.is-submerged nav a { color: rgba(220,246,245,.72); }
@@ -76,15 +77,25 @@ const styles = `
   .portable-ocean-nav nav { gap: clamp(9px,2.5vw,18px); padding-right: 8px; }
   .portable-ocean-nav nav a { font-size: 8px; }
 }
-@media (max-width: 500px) {
+@media (max-width: 620px) {
+  .portable-ocean-nav { padding-right: 8px; }
   .portable-ocean-nav__mark { width: 42px; height: 42px; flex-basis: 42px; }
-  .portable-ocean-nav nav { gap: 8px; }
-  .portable-ocean-nav nav a { font-size: 7.5px; letter-spacing: .045em; }
+  .portable-ocean-nav__menu-button { display: inline-flex; min-width: 68px; min-height: 42px; align-items: center; justify-content: center; gap: 8px; padding: 0 12px; color: inherit; border: 1px solid currentColor; border-color: rgba(127,224,222,.2); border-radius: 999px; background: transparent; font: 500 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .portable-ocean-nav__menu-button i { position: relative; width: 13px; height: 1px; background: currentColor; transition: background-color .2s ease; }
+  .portable-ocean-nav__menu-button i::before, .portable-ocean-nav__menu-button i::after { content: ''; position: absolute; left: 0; width: 13px; height: 1px; background: currentColor; transition: transform .2s ease, top .2s ease; }
+  .portable-ocean-nav__menu-button i::before { top: -4px; }
+  .portable-ocean-nav__menu-button i::after { top: 4px; }
+  .portable-ocean-nav.is-menu-open .portable-ocean-nav__menu-button i { background: transparent; }
+  .portable-ocean-nav.is-menu-open .portable-ocean-nav__menu-button i::before { top: 0; transform: rotate(45deg); }
+  .portable-ocean-nav.is-menu-open .portable-ocean-nav__menu-button i::after { top: 0; transform: rotate(-45deg); }
+  .portable-ocean-nav nav { position: absolute; top: calc(100% + 10px); right: 0; left: 0; display: grid; gap: 0; padding: 10px; overflow: hidden; border: 1px solid rgba(127,224,222,.16); border-radius: 22px; background: rgba(3,24,35,.96); box-shadow: 0 22px 55px rgba(0,10,16,.38); backdrop-filter: blur(20px); opacity: 0; visibility: hidden; transform: translateY(-8px) scale(.98); transform-origin: top; transition: opacity .2s ease, visibility .2s ease, transform .2s ease; }
+  .portable-ocean-nav.is-menu-open nav { opacity: 1; visibility: visible; transform: none; }
+  .portable-ocean-nav nav a { min-height: 48px; padding: 0 14px; color: rgba(220,246,245,.76); border-bottom: 1px solid rgba(127,224,222,.08); font-size: 9px; letter-spacing: .1em; }
+  .portable-ocean-nav nav a:last-child { border-bottom: 0; }
+  .portable-ocean-nav nav a::after { display: none; }
 }
 @media (max-width: 380px) {
   .portable-ocean-nav { width: calc(100% - 12px) !important; }
-  .portable-ocean-nav nav { gap: 6px; }
-  .portable-ocean-nav nav a { font-size: 7px; letter-spacing: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .portable-ocean-nav { transition: none; } }
 `
@@ -100,6 +111,7 @@ export default function Navbar({
 }: NavbarProps) {
   const headerRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const header = headerRef.current
@@ -119,6 +131,21 @@ export default function Navbar({
     }
   }, [submergedAt])
 
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    const closeOnDesktop = () => {
+      if (window.innerWidth > 620) setMenuOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    window.addEventListener('resize', closeOnDesktop)
+    return () => {
+      window.removeEventListener('keydown', closeOnEscape)
+      window.removeEventListener('resize', closeOnDesktop)
+    }
+  }, [])
+
   const dimensions = {
     '--nav-expanded': `${Math.max(expandedWidth, compactWidth)}px`,
     '--nav-compact': `${Math.min(expandedWidth, compactWidth)}px`,
@@ -129,7 +156,7 @@ export default function Navbar({
       <style>{styles}</style>
       <motion.header
         ref={headerRef}
-        className="portable-ocean-nav"
+        className={`portable-ocean-nav${menuOpen ? ' is-menu-open' : ''}`}
         style={dimensions}
         initial={reducedMotion ? false : { opacity: 0, x: '-50%', y: -18, scale: 0.98 }}
         animate={{ opacity: 1, x: '-50%', y: 0, scale: 1 }}
@@ -146,11 +173,22 @@ export default function Navbar({
           <span className="portable-ocean-nav__mark">{monogram}</span>
           <span className="portable-ocean-nav__name">{brand}<span>.</span></span>
         </motion.a>
-        <nav aria-label="Main navigation">
+        <button
+          className="portable-ocean-nav__menu-button"
+          type="button"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          aria-controls="portable-ocean-nav-menu"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span>{menuOpen ? 'Close' : 'Menu'}</span><i aria-hidden="true" />
+        </button>
+        <nav id="portable-ocean-nav-menu" aria-label="Main navigation">
           {items.map((item, index) => (
             <motion.a
               href={item.href}
               key={item.href}
+              onClick={() => setMenuOpen(false)}
               initial={reducedMotion ? false : { opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.48 + index * 0.07 }}

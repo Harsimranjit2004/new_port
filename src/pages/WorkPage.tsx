@@ -39,18 +39,8 @@ export default function WorkPage() {
         className="work-page__ocean"
       >
         <header className="work-page__intro">
-          <div className="work-page__depth-markers" aria-hidden="true">
-            <span>Surface</span>
-            <i />
-            <span>Selected systems</span>
-          </div>
-          <p>Engineering records · 2026</p>
           <div className="work-page__title-reveal">
             <h1>Work experience</h1>
-          </div>
-          <div className="work-page__intro-note">
-            <span>03 projects</span>
-            <p>Systems built around evidence, reproducibility, constraints, and decisions.</p>
           </div>
         </header>
 

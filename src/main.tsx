@@ -2,7 +2,9 @@ import { StrictMode, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { PortableWaterOrb } from './components/portable-water-orb'
-import AboutPage from './pages/AboutPage'
+
+import About2Page from './pages/About2Page'
+import AdminPage from './pages/AdminPage'
 import ContactPage from './pages/ContactPage'
 import FieldNotesDetailPage from './pages/FieldNotesDetailPage'
 import FieldNotesPage from './pages/FieldNotesPage'
@@ -11,7 +13,9 @@ import WorkPage from './pages/WorkPage'
 import './index.css'
 
 const pages: Record<string, ReactNode> = {
-  '/about': <AboutPage />,
+  '/about': <About2Page />,
+  '/about-2': <About2Page />,
+  '/admin': <AdminPage />,
   '/contact': <ContactPage />,
   '/work': <WorkPage />,
   '/work/whetstone': <WhetstoneProjectPage />,
@@ -24,7 +28,7 @@ const page = pages[pathname] ?? <App />
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {page}
-    <PortableWaterOrb
+    {pathname !== '/admin' && <PortableWaterOrb
       surfaceSelector=".white-surface"
       panelTitle="Ask beneath the surface."
       panelContent={(
@@ -38,6 +42,6 @@ createRoot(document.getElementById('root')!).render(
           </nav>
         </div>
       )}
-    />
+    />}
   </StrictMode>,
 )

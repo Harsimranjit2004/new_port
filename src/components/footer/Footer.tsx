@@ -18,14 +18,18 @@ export default function Footer() {
       <div className="site-footer__inner">
         <div className="site-footer__grid">
           <section className="site-footer__identity" aria-label="Identity and external links">
-            <div>
-              <p className="site-footer__name">Harsimranjit</p>
-              <p className="site-footer__role">ML / AI Engineer</p>
+            <div className="site-footer__identity-copy">
+              <div className="site-footer__identity-heading">
+                <span className="site-footer__terminal" aria-hidden="true">›_</span>
+                <div><p className="site-footer__name">Harsimranjit<span>.</span></p><p className="site-footer__role">ML / AI Engineer</p></div>
+              </div>
+              <p className="site-footer__intro">Building thoughtful systems from research to production.</p>
+              <span className="site-footer__availability"><i aria-hidden="true" /> Open to opportunities</span>
             </div>
             <nav className="site-footer__social" aria-label="External links">
-              <a href="https://github.com/"><Icon name="github" /><span>GitHub</span></a>
-              <a href="https://www.linkedin.com/"><Icon name="linkedin" /><span>LinkedIn</span></a>
-              <a href="mailto:hello@example.com"><Icon name="mail" /><span>Email</span></a>
+              <a href="https://github.com/" aria-label="GitHub"><Icon name="github" /><span>GitHub</span></a>
+              <a href="https://www.linkedin.com/" aria-label="LinkedIn"><Icon name="linkedin" /><span>LinkedIn</span></a>
+              <a href="mailto:hello@example.com" aria-label="Email"><Icon name="mail" /><span>Email</span></a>
               <a className="site-footer__resume" href="mailto:hello@example.com?subject=R%C3%A9sum%C3%A9%20request"><Icon name="file" /><span>Request résumé</span></a>
             </nav>
           </section>
