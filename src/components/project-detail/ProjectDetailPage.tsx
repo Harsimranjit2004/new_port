@@ -74,7 +74,7 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
 
   useEffect(() => {
     const sections = sectionLinks
-      .map(([, label]) => document.getElementById(label.toLowerCase()))
+      .map(([, , id]) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section))
     if (!sections.length || typeof IntersectionObserver === 'undefined') return
 
@@ -113,17 +113,12 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
             {project.metrics.map((metric) => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}
           </section>
 
-          <div className="pd-pipeline" aria-label="System pipeline">
-            {project.pipeline.map((node, index) => (
-              <span key={node}>{node}{index < project.pipeline.length - 1 && <i aria-hidden="true" />}</span>
-            ))}
-          </div>
 
           <div className="pd-layout">
             <aside className="pd-contents">
               <span>Contents</span>
               <nav>{sectionLinks.map(([number, label, id]) => (
-                <a className={activeSection === id ? 'is-active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={number}><b>{number}</b>{label}</a>
+                <a className={activeSection === id ? 'is-active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} onClick={() => setActiveSection(id)} key={number}><b>{number}</b>{label}</a>
               ))}</nav>
 
             </aside>
@@ -146,9 +141,6 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
 
               <section id="system" className="pd-section pd-section--split">
                 <div className="pd-section__copy"><span>02</span><div><h2>{project.system.title}</h2><p>{project.system.copy}</p></div></div>
-                <div className="pd-system-flow">
-                  {project.system.nodes.map((node, index) => <span key={node}>{node}{index < project.system.nodes.length - 1 && <i>→</i>}</span>)}
-                </div>
                 <ProjectPlatePlaceholder plate="Plate 02" label="System" prompt="Drop a wide image — architecture, pipeline, or system view" />
               </section>
 
@@ -167,18 +159,20 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
               </section>
 
               <section id="evidence" className="pd-section pd-evidence">
+                <div className="pd-section__copy"><span>04</span><div><h2>Evidence</h2><p>Real run. Real trace. Everything accounted for.</p></div></div>
                 <div className="pd-placeholder--wide">
                   <ProjectPlatePlaceholder plate="Plate 03" label="Artifact" prompt="Drop a wide image — signed artifact or evaluation output" />
                   <p>What ships: weights plus the records required to explain them.</p>
                 </div>
-                <div className="pd-section__copy"><span>04</span><div><h2>Evidence</h2><p>Real run. Real trace. Everything accounted for.</p></div></div>
-                <ProjectRecord className="pd-evidence__trace" cmd={project.evidence.cmd} result={project.evidence.result} pipeline={project.evidence.pipeline} readout={project.evidence.rows} />
-                <div className="pd-checks"><span>Verification</span>{project.evidence.checks.map((check) => <div key={check}><span>{check}</span><strong>Pass</strong></div>)}</div>
+                <div className="pd-evidence__details">
+                  <ProjectRecord className="pd-evidence__trace" cmd={project.evidence.cmd} result={project.evidence.result} pipeline={project.evidence.pipeline} readout={project.evidence.rows} />
+                  <div className="pd-checks"><span>Verification</span>{project.evidence.checks.map((check) => <div key={check}><span>{check}</span><strong>Pass</strong></div>)}</div>
+                </div>
               </section>
 
               <section id="notes" className="pd-section pd-notes">
                 <div className="pd-section__copy"><span>05</span><div><h2>Related field notes</h2><p>Observations, decisions, and details recorded alongside the build.</p></div></div>
-                <div>{project.notes.map((note) => <a href={note.href} key={note.title}><strong>{note.title}</strong><span>{note.meta} ↗</span></a>)}</div>
+                <div className="pd-notes__grid">{project.notes.map((note) => <a href={note.href} key={note.title}><strong>{note.title}</strong><span>{note.meta} ↗</span></a>)}</div>
               </section>
 
               <nav className="pd-record-nav" aria-label="Project navigation">

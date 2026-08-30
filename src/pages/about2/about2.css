@@ -5,11 +5,17 @@
   --a2-accent: #129dad;
   --a2-line: #cddadb;
   --a2-shell: 1400px;
+  display: block;
+  width: 100%;
   min-height: 100vh;
+  padding: 0;
+  overflow-x: clip;
   color: var(--a2-ink);
   background: #fff;
   font-family: Inter, system-ui, sans-serif;
 }
+
+.a2.white-surface { padding: 0; }
 
 .a2 *,
 .a2 *::before,
@@ -312,10 +318,8 @@
 .a2-life-photo:nth-child(3n) .a2-life-placeholder { background: #e7eeee; }
 .a2-outside__ending { margin: clamp(2.5rem, 4vw, 3.5rem) 0 0; color: #819095; font: 550 8px/1.4 ui-monospace, monospace; letter-spacing: .15em; text-align: right; text-transform: uppercase; }
 
-.a2 > .site-footer { width: 100vw; margin-left: calc(50% - 50vw); }
+.a2 > .site-footer { width: 100%; margin: 0; }
 
-/* Keep this first-section review free of the global assistant overlay. */
-.a2 ~ .portable-water-orb { display: none; }
 
 @media (max-width: 980px) {
   .a2-shell { width: calc(100% - 4rem); }
