@@ -6,24 +6,14 @@ import './WorkPage.css'
 
 const explorations = [
   {
-    index: '04', domain: 'Model evaluation', status: 'Prototype', title: 'Evaluation Harness',
-    question: 'Can a failed evaluation preserve enough context to explain why it failed?',
-    signal: 'TEST → SLICE → TRACE → COMPARE', note: 'Mock project / in development',
-  },
-  {
-    index: '05', domain: 'Retrieval systems', status: 'Researching', title: 'Retrieval Lab',
-    question: 'How much retrieval quality can be measured before generation obscures the evidence?',
-    signal: 'QUERY → RETRIEVE → RERANK → AUDIT', note: 'Mock project / research direction',
-  },
-  {
     index: '06', domain: 'ML observability', status: 'Concept study', title: 'Drift Signals',
     question: 'Which changes deserve attention before monitoring becomes another source of noise?',
-    signal: 'BASELINE → SHIFT → IMPACT → ALERT', note: 'Mock project / concept study',
+    signal: 'BASELINE → SHIFT → IMPACT → ALERT', note: 'Mock project / concept study', href: '/work/drift-signals',
   },
   {
     index: '07', domain: 'Agent systems', status: 'Exploring', title: 'Tool Ledger',
     question: 'What should an agent record so every tool call remains inspectable afterward?',
-    signal: 'INTENT → TOOL → RESULT → PROVENANCE', note: 'Mock project / early exploration',
+    signal: 'INTENT → TOOL → RESULT → PROVENANCE', note: 'Mock project / early exploration', href: '/work/tool-ledger',
   },
 ]
 
@@ -57,7 +47,7 @@ export default function WorkPage() {
 
           <div className="work-explorations__grid">
             {explorations.map((project) => (
-              <article className="work-exploration-card" key={project.index}>
+              <a className="work-exploration-card" href={project.href} aria-label={`Open ${project.title} project detail`} key={project.index}>
                 <div className="work-exploration-card__meta">
                   <span>{project.index}</span><span>{project.domain}</span><i /><span>{project.status}</span>
                 </div>
@@ -70,8 +60,8 @@ export default function WorkPage() {
                     <span key={step}>{step}{index < steps.length - 1 && <i aria-hidden="true">→</i>}</span>
                   ))}
                 </div>
-                <footer><span>{project.note}</span><span aria-hidden="true">○</span></footer>
-              </article>
+                <footer><span>{project.note}</span><span className="work-exploration-card__cta">Open record {project.index} <i aria-hidden="true">↗</i></span></footer>
+              </a>
             ))}
           </div>
         </section>

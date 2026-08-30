@@ -19,6 +19,12 @@ const pages: Record<string, ReactNode> = {
   '/contact': <ContactPage />,
   '/work': <WorkPage />,
   '/work/whetstone': <WhetstoneProjectPage />,
+  '/work/moderation': <WhetstoneProjectPage />,
+  '/work/recommendation-systems': <WhetstoneProjectPage />,
+  '/work/evaluation-harness': <WhetstoneProjectPage />,
+  '/work/retrieval-lab': <WhetstoneProjectPage />,
+  '/work/drift-signals': <WhetstoneProjectPage />,
+  '/work/tool-ledger': <WhetstoneProjectPage />,
   '/field-notes': <FieldNotesPage />,
   '/field-notes/tokenizer-native-backend': <FieldNotesDetailPage />,
 }

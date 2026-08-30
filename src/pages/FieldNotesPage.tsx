@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
+import { OceanBackground } from '../components/ocean'
 import './FieldNotesPage.css'
 
 interface Note {
@@ -31,13 +32,12 @@ export default function FieldNotesPage() {
   return (
     <main className="fn-page">
       <Navbar submergedAt={0} />
+      <OceanBackground screens={1} startDepth="shallow" endDepth="deep" showSurfaceWaves className="fn-ocean">
       <section className="fn-root">
         <header className="fn-header">
           <a href="/" className="fn-link fn-back">← Observatory</a>
           <span className="fn-kicker">Field notes</span>
           <h1>Short technical notes, written as they happen.</h1>
-          <p>Not case studies — smaller findings, decisions and dead ends from the active builds, logged close to when they happened.</p>
-          <p className="fn-count">{NOTES.length} notes · Updated Aug 2026</p>
 
           <nav className="fn-tags" aria-label="Filter field notes">
             {TAGS.map((tag) => (
@@ -74,6 +74,7 @@ export default function FieldNotesPage() {
         </footer>
       </section>
       <Footer />
+      </OceanBackground>
     </main>
   )
 }

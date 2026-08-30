@@ -51,4 +51,3 @@ export const workDomains = [
 
 export const technologies = ['Python', 'C++', 'TypeScript', 'JavaScript', 'PyTorch', 'FastAPI', 'React', 'Next.js', 'Node.js', 'PostgreSQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Git']
 
-export const currentlyExploring = ['Small language models', 'Inference engineering', 'Evaluation']

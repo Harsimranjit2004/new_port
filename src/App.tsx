@@ -27,7 +27,7 @@ export default function App() {
           The interesting part is<br />
           what made it possible.
         </p>
-        <ProjectRecordShowcase />
+        <ProjectRecordShowcase limit={3} />
         <Footer />
       </OceanBackground>
     </main>

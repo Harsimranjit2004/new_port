@@ -226,10 +226,23 @@
   grid-template-rows: auto minmax(12rem, 1fr) auto auto;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid rgb(190 252 247 / 0.17);
-  border-radius: 18px;
-  background: rgb(3 24 34 / 0.26);
-  box-shadow: inset 0 1px rgb(230 255 253 / 0.025);
+  border: 1px solid rgb(160 235 235 / .45);
+  border-radius: 12px;
+  background: rgb(4 47 60 / .28);
+  color: inherit;
+  box-shadow: inset 0 1px rgb(230 255 253 / .04), 0 16px 35px -30px rgb(0 20 28 / .5);
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+  transition: border-color 200ms ease, transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.work-exploration-card:hover,
+.work-exploration-card:focus-visible {
+  border-color: rgb(160 235 235 / .72);
+  background: rgb(135 222 224 / .18);
+  box-shadow: inset 0 1px rgb(230 255 253 / .07), 0 22px 42px -28px rgb(0 20 28 / .62);
+  outline: none;
+  transform: translateY(-4px);
 }
 
 .work-exploration-card__meta {
@@ -239,7 +252,7 @@
   align-items: center;
   padding: 0.9rem 1rem;
   color: rgb(198 226 230 / 0.5);
-  border-bottom: 1px solid rgb(190 252 247 / 0.1);
+  border-bottom: 1px solid rgb(160 235 235 / .18);
   font-size: 7.5px;
   letter-spacing: 0.11em;
 }
@@ -249,7 +262,7 @@
 
 .work-exploration-card__body { padding: clamp(1.5rem, 4vw, 2.5rem); }
 .work-exploration-card__body h3 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 380; line-height: 1; letter-spacing: -0.04em; overflow-wrap: anywhere; }
-.work-exploration-card__body p { max-width: 35ch; margin: 1.4rem 0 0; color: rgb(215 240 241 / 0.66); font-size: 0.95rem; font-weight: 300; line-height: 1.55; }
+.work-exploration-card__body p { display: -webkit-box; max-width: 40ch; margin: 1.4rem 0 0; overflow: hidden; color: rgb(215 240 241 / 0.66); font-size: 0.95rem; font-weight: 300; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
 
 .work-exploration-card__signal {
   display: flex;
@@ -259,7 +272,7 @@
   padding: 1rem;
   overflow-x: auto;
   color: rgb(150 240 232 / 0.68);
-  border-block: 1px solid rgb(190 252 247 / 0.09);
+  border-block: 1px solid rgb(160 235 235 / .16);
   font-size: 7.5px;
   letter-spacing: 0.08em;
   scrollbar-width: thin;
@@ -267,8 +280,13 @@
 
 .work-exploration-card__signal > span { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 0.6rem; }
 .work-exploration-card__signal i { color: rgb(198 226 230 / 0.3); font-style: normal; }
-.work-exploration-card footer { display: flex; justify-content: space-between; gap: 1rem; padding: 0.85rem 1rem; color: rgb(198 226 230 / 0.38); font-size: 7.5px; letter-spacing: 0.09em; }
-.work-exploration-card footer span:last-child { color: rgb(150 240 232 / 0.62); }
+.work-exploration-card footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.85rem 1rem; color: rgb(198 226 230 / 0.48); font-size: 7.5px; letter-spacing: 0.09em; }
+.work-exploration-card__cta { display: inline-flex; min-height: 2.6rem; align-items: center; justify-content: space-between; gap: .9rem; padding: .65rem .85rem; color: #dff8f7; border: 1px solid rgb(160 235 235 / .45); border-radius: 10px; background: rgb(4 47 60 / .28); backdrop-filter: blur(8px); font-size: 8px; letter-spacing: .11em; white-space: nowrap; transition: border-color 180ms ease, background-color 180ms ease; }
+.work-exploration-card__cta i { font-size: 11px; font-style: normal; transition: transform 180ms ease; }
+.work-exploration-card:hover .work-exploration-card__cta,
+.work-exploration-card:focus-visible .work-exploration-card__cta { border-color: rgb(160 235 235 / .72); background: rgb(135 222 224 / .18); }
+.work-exploration-card:hover .work-exploration-card__cta i,
+.work-exploration-card:focus-visible .work-exploration-card__cta i { transform: translate(3px, -2px); }
 
 @media (max-width: 900px) {
   .work-explorations { width: calc(100% - 3rem); }
@@ -309,6 +327,8 @@
   .work-exploration-card__meta { grid-template-columns: auto 1fr auto; }
   .work-exploration-card__meta i { display: none; }
   .work-exploration-card__meta > span:last-child { grid-column: 1 / -1; }
+  .work-exploration-card footer { align-items: flex-start; flex-direction: column; }
+  .work-exploration-card__cta { width: 100%; }
 }
 
 @media (max-width: 420px) {

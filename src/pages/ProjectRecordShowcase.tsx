@@ -73,13 +73,63 @@ const projects: ShowcaseProject[] = [
       { k: 'explore', v: 'E inserted · unseen creator', note: 'slot 4', w: 0.3 },
     ],
   },
+  {
+    index: '04', domain: 'Model evaluation', status: 'Prototype', title: 'Evaluation Harness',
+    question: 'Can a failed evaluation preserve enough context to explain why it failed?',
+    href: '/work/evaluation-harness',
+    cmd: 'evaluate run_88c1 --slice failures', result: '✓ 14 regressions isolated · 3 shared causes',
+    pipeline: [
+      { label: 'Tests' }, { label: 'Slices' }, { label: 'Compare' }, { label: 'Explain', state: 'decision' },
+    ],
+    insight: 'Three failure patterns explain fourteen regressions',
+    readout: [
+      { k: 'suite', v: '312 cases · 8 behavioural slices', note: 'loaded', w: 0.78 },
+      { k: 'baseline', v: 'model v12 · pass 0.84', note: 'reference', w: 0.58 },
+      { k: 'candidate', v: 'model v13 · pass 0.81', note: 'regressed', w: 0.52 },
+      { k: 'failures', v: '14 isolated · 3 common causes', note: 'explained', w: 0.68, hi: true },
+    ],
+  },
+  {
+    index: '05', domain: 'Retrieval systems', status: 'Researching', title: 'Retrieval Lab',
+    question: 'How much retrieval quality can be measured before generation obscures the evidence?',
+    href: '/work/retrieval-lab',
+    cmd: 'retrieve query_142 --audit', result: '✓ 8 sources ranked · evidence coverage 0.87',
+    pipeline: [
+      { label: 'Query' }, { label: 'Retrieve' }, { label: 'Rerank' }, { label: 'Audit', state: 'decision' },
+    ],
+    insight: 'Reranking recovered two sources missed by semantic similarity',
+    readout: [
+      { k: 'query', v: '142 · technical comparison', note: 'parsed', w: 0.32 },
+      { k: 'retrieve', v: '64 candidates · hybrid search', note: 'collected', w: 0.82 },
+      { k: 'rerank', v: '64 → 8 · cross-encoder', note: 'ordered', w: 0.66 },
+      { k: 'coverage', v: '0.87 · 6 claims supported', note: 'audited', w: 0.74, hi: true },
+    ],
+  },
 ]
 
-export default function ProjectRecordShowcase() {
+export default function ProjectRecordShowcase({ limit }: { limit?: number }) {
+  const visibleProjects = typeof limit === 'number' ? projects.slice(0, limit) : projects
+
   return (
     <section className="project-showcase" aria-label="Selected engineering projects">
-      {projects.map((project) => (
-        <article className="project-showcase__project" key={project.index}>
+      {visibleProjects.map((project) => (
+        <article
+          className="project-showcase__project"
+          key={project.index}
+          role="link"
+          tabIndex={0}
+          aria-label={`Open ${project.title} project detail`}
+          onClick={(event) => {
+            if ((event.target as HTMLElement).closest('a')) return
+            window.location.href = project.href
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              window.location.href = project.href
+            }
+          }}
+        >
           <header className="project-showcase__header">
             <div className="project-showcase__rail">
               <span>{project.index}</span>

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
+import { OceanBackground } from '../components/ocean'
 import './ContactPage.css'
 
 export default function ContactPage() {
@@ -23,7 +24,7 @@ export default function ContactPage() {
     <main className="contact-page">
       <Navbar submergedAt={0} />
 
-
+      <OceanBackground screens={1} startDepth="shallow" endDepth="deep" showSurfaceWaves className="contact-ocean">
       <div className="contact-shell">
         <div className="contact-rail">
           <span>Contact / final depth</span>
@@ -91,6 +92,7 @@ export default function ContactPage() {
         </footer>
       </div>
       <Footer />
+      </OceanBackground>
     </main>
   )
 }

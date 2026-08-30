@@ -13,6 +13,12 @@
   padding-block: clamp(5rem, 7vh, 7rem) clamp(6rem, 8vh, 8rem);
   padding-inline: max(3rem, calc((100vw - 82rem) / 2));
   scroll-margin-top: 7rem;
+  cursor: pointer;
+}
+
+.project-showcase__project:focus-visible {
+  outline: 2px solid rgb(var(--showcase-aqua) / .8);
+  outline-offset: -2px;
 }
 
 .project-showcase__header {
@@ -55,7 +61,12 @@
 }
 
 .project-showcase__question {
-  max-width: 26ch;
+  display: -webkit-box;
+  max-width: 40ch;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   margin: clamp(1.5rem, 3vh, 2.25rem) 0 0;
   color: rgb(238 255 255 / 0.82);
   font-size: clamp(1.05rem, 1.55vw, 1.35rem);
