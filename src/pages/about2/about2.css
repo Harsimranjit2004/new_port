@@ -346,37 +346,74 @@
 
 @media (max-width: 720px) {
   .a2-shell { width: calc(100% - 3rem); }
-  .a2-observer { min-height: auto; padding: 6.5rem 0 3.5rem; }
-  .a2-observer__grid { grid-template-columns: 1fr; gap: 3.5rem; }
-  .a2-observer__content h1 { margin-top: 2rem; font-size: clamp(2.75rem, 13vw, 4.5rem); }
-  .a2-observer__copy { margin-top: 2rem; }
-  .a2-observer__copy p + p { margin-top: 1.25rem; }
-  .a2-portrait { order: -1; }
-  .a2-portrait__frame { aspect-ratio: 4 / 3; }
-  .a2-technologies { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-  .a2-shelf { padding-block: 6rem 7rem; }
+  /* 01: navbar, portrait, and introduction share the opening viewport. */
+  .a2-observer { min-height: 100svh; padding: 5.5rem 0 2.5rem; }
+  .a2-observer__grid { grid-template-columns: 1fr; gap: 1.35rem; }
+  .a2-observer__content h1 { margin-top: 1rem; font-size: clamp(2.5rem, 10vw, 3.75rem); letter-spacing: -.07em; }
+  .a2-observer__copy { margin-top: 1.4rem; }
+  .a2-observer__copy p { font-size: clamp(.9rem, 3.5vw, 1.05rem); line-height: 1.58; }
+  .a2-observer__copy p + p { margin-top: 1rem; }
+  .a2-observer__links { gap: 1.25rem; margin-top: 1.5rem; }
+  .a2-observer__links a { min-height: 3rem; }
+  .a2-observer__links a.is-primary { min-width: 9.75rem; }
+  .a2-portrait { order: -1; }
+  .a2-portrait__frame { height: clamp(14rem, 31svh, 22rem); aspect-ratio: auto; }
+  .a2-portrait figcaption { margin-top: .55rem; }
+
+  /* 02: experience occupies the next screen; practice follows as screen 03. */
+  .a2-work { padding: 3.5rem 0 4rem; }
+  .a2-work__header { margin-bottom: 2rem; }
+  .a2-work__grid { gap: 0; }
+  .a2-work__column h3 { margin-bottom: 1.75rem; }
+  .a2-work__experience { min-height: calc(100svh - 8rem); }
+  .a2-work__column + .a2-work__column { padding-top: 2.25rem; }
+  .a2-timeline li { padding-bottom: 1.65rem; }
+  .a2-domains li { min-height: 3.35rem; }
+  .a2-technologies { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+  .a2-technologies li { min-height: 2.9rem; padding: .5rem .3rem; font-size: .7rem; }
+
+  /* 03: one current title followed by three rows of three books (10 total). */
+  .a2-shelf { padding-block: 5rem 6rem; }
+  .a2-shelf__intro { gap: 2rem; margin-bottom: 3rem; }
   .a2-shelf__intro header h2 { font-size: clamp(2.6rem, 12vw, 4rem); }
   .a2-current-book > div { grid-template-columns: 5rem 1fr; gap: 1.15rem; padding: 1rem; }
   .a2-current-book__cover { height: 7.5rem; }
-  .a2-shelf-installation { gap: 4rem; }
-  .a2-shelf-level__books { min-height: 12rem; }
-  .a2-shelf-book { height: min(var(--book-height), 185px); }
-  .a2-outside { padding-block: 6rem 5rem; }
+  .a2-shelf-installation { gap: 2.5rem; }
+  .a2-shelf-level__books,
+  .a2-shelf-level:last-child .a2-shelf-level__books {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-height: 0;
+    gap: clamp(.65rem, 3vw, 1rem);
+    align-items: end;
+    padding: 1.5rem .5rem 0;
+    overflow: visible;
+  }
+  .a2-shelf-level:first-child .a2-shelf-book:first-child,
+  .a2-shelf-level:first-child .a2-shelf-book:nth-child(n + 5),
+  .a2-shelf-level:not(:first-child) .a2-shelf-book:nth-child(n + 4) { display: none; }
+  .a2-shelf-book { width: 100%; height: auto; aspect-ratio: 2 / 3; }
+  .a2-shelf-plank { height: 9px; }
+
+  /* 04: the four-photo mobile collage from the supplied sketch. */
+  .a2-outside { padding-block: 5rem 4rem; }
   .a2-outside .a2-shell { width: calc(100% - 3rem); }
+  .a2-outside__header { margin-bottom: 2.5rem; }
   .a2-outside__header h2 { font-size: clamp(2.6rem, 12vw, 4rem); }
-  .a2-life-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 8rem; gap: 12px; }
-  .a2-life-photo.is-large { grid-column: span 2; grid-row: span 2; }
-  .a2-life-photo.is-wide { grid-column: span 2; grid-row: span 1; }
-  .a2-life-photo.is-tall { grid-column: span 1; grid-row: span 2; }
-  .a2-life-photo.is-medium,
-  .a2-life-photo.is-small { grid-column: span 1; grid-row: span 1; }
+  .a2-life-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 11rem 8rem 8rem; grid-auto-rows: 0; gap: 12px; }
+  .a2-life-photo:nth-child(n + 5) { display: none; }
+  .a2-life-photo:nth-child(1) { grid-column: 1 / -1; grid-row: 1; }
+  .a2-life-photo:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .a2-life-photo:nth-child(3) { grid-column: 2; grid-row: 2 / span 2; }
+  .a2-life-photo:nth-child(4) { grid-column: 1; grid-row: 3; }
 }
 
 @media (max-width: 430px) {
   .a2-shell { width: calc(100% - 2rem); }
-  .a2-observer__links { align-items: stretch; flex-direction: column; gap: 1rem; }
-  .a2-observer__links a { width: fit-content; }
+  .a2-observer__links { align-items: center; flex-direction: row; flex-wrap: nowrap; gap: .75rem; }
+  .a2-observer__links a { width: auto; }
+  .a2-observer__links a.is-primary { min-width: 0; padding-inline: 1rem; }
   .a2-outside .a2-shell { width: calc(100% - 2rem); }
   .a2-life-grid { grid-auto-rows: 7rem; gap: 10px; }
 }
