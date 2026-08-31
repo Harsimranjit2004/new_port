@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { API_BASE, ApiError, adminApi } from '../lib/adminApi'
+import AboutEditor from './AboutEditor'
 import './AdminPage.css'
 
-type Tab = 'overview' | 'helper' | 'profile' | 'projects' | 'notes' | 'content' | 'media' | 'inbox' | 'rag'
+type Tab = 'overview' | 'helper' | 'profile' | 'about' | 'projects' | 'notes' | 'content' | 'media' | 'inbox' | 'rag'
 type RecordValue = Record<string, unknown>
 
 const projectTemplate = {
@@ -27,15 +28,16 @@ function JsonEditor({ value, onChange, label }: { value: unknown; onChange: (val
   return <label className="admin-json"><span>{label}</span><textarea value={text} onChange={(event) => update(event.target.value)} spellCheck={false} />{error && <small>{error}</small>}</label>
 }
 
-function AdminLogin({ onLogin }: { onLogin: (key: string) => Promise<void> }) {
-  const [key, setKey] = useState('')
+function AdminLogin({ onLogin }: { onLogin: (username: string, password: string) => Promise<void> }) {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const submit = async (event: FormEvent) => {
     event.preventDefault(); setBusy(true); setError('')
-    try { await onLogin(key) } catch (reason) { setError(reason instanceof Error ? reason.message : 'Login failed') } finally { setBusy(false) }
+    try { await onLogin(username, password) } catch (reason) { setError(reason instanceof Error ? reason.message : 'Login failed') } finally { setBusy(false) }
   }
-  return <main className="admin-login"><form onSubmit={submit}><span>Portfolio / administration</span><h1>Observer access</h1><p>Enter the backend admin key. It is stored only in this browser session.</p><label><span>Admin key</span><input type="password" value={key} onChange={(event) => setKey(event.target.value)} autoFocus required /></label>{error && <p className="admin-error">{error}</p>}<button disabled={busy}>{busy ? 'Verifying…' : 'Open control room →'}</button><a href="/">← Return to portfolio</a></form></main>
+  return <main className="admin-login"><form onSubmit={submit}><span>Portfolio / administration</span><h1>Observer access</h1><p>Sign in with the admin username and password. The session is stored only in this browser tab.</p><label><span>Username</span><input type="text" value={username} onChange={(event) => setUsername(event.target.value)} autoFocus required autoComplete="username" /></label><label><span>Password</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" /></label>{error && <p className="admin-error">{error}</p>}<button disabled={busy}>{busy ? 'Verifying…' : 'Open control room →'}</button><a href="/">← Return to portfolio</a></form></main>
 }
 
 export default function AdminPage() {
@@ -55,6 +57,7 @@ export default function AdminPage() {
   const [inbox, setInbox] = useState<RecordValue[]>([])
   const [rag, setRag] = useState<RecordValue>({})
   const [sources, setSources] = useState<RecordValue[]>([])
+  const [knowledgeUploads, setKnowledgeUploads] = useState<RecordValue[]>([])
   const [selected, setSelected] = useState<RecordValue | null>(null)
   const [editorMode, setEditorMode] = useState<'project' | 'note' | 'profile' | 'setting' | 'page' | null>(null)
   const [helperInput, setHelperInput] = useState('')
@@ -72,20 +75,24 @@ export default function AdminPage() {
   const loadCore = useCallback(async (key = adminKey) => {
     setLoading(true); setError('')
     try {
-      const [profileData, projectData, noteData, settingData, mediaData, inboxData] = await Promise.all([
+      const [profileData, projectData, noteData, settingData, mediaData, inboxData, uploadData] = await Promise.all([
         adminApi.get<RecordValue>('/profile', key), adminApi.get<RecordValue[]>('/projects/admin', key),
         adminApi.get<RecordValue[]>('/field-notes/admin', key), adminApi.get<RecordValue[]>('/site/settings', key),
         adminApi.get<RecordValue[]>('/media-assets', key), adminApi.get<RecordValue[]>('/contact', key),
+        adminApi.get<RecordValue[]>('/knowledge-documents', key).catch((reason) => {
+          if (reason instanceof ApiError && reason.status === 404) return []
+          throw reason
+        }),
       ])
-      setProfile(profileData); setProjects(projectData); setNotes(noteData); setSettings(settingData); setMedia(mediaData); setInbox(inboxData)
+      setProfile(profileData); setProjects(projectData); setNotes(noteData); setSettings(settingData); setMedia(mediaData); setInbox(inboxData); setKnowledgeUploads(uploadData)
       try { setRag(await adminApi.get<RecordValue>('/ai/status', key)); setSources(await adminApi.get<RecordValue[]>('/ai/sources', key)) } catch { setRag({ status: 'Not indexed' }); setSources([]) }
       setVerified(true)
     } finally { setLoading(false) }
   }, [adminKey])
 
-  const login = async (key: string) => {
-    await adminApi.get('/projects/admin', key)
-    sessionStorage.setItem('portfolio_admin_key', key); setAdminKey(key); await loadCore(key)
+  const login = async (username: string, password: string) => {
+    const { token } = await adminApi.login(username, password)
+    sessionStorage.setItem('portfolio_admin_key', token); setAdminKey(token); await loadCore(token)
   }
   const logout = () => { sessionStorage.removeItem('portfolio_admin_key'); setAdminKey(''); setVerified(false) }
   useEffect(() => { if (adminKey && !verified) loadCore(adminKey).catch(guard) }, [])
@@ -149,6 +156,31 @@ export default function AdminPage() {
     try { await adminApi.upload('/media-assets', form, adminKey); setMedia(await adminApi.get('/media-assets', adminKey)); event.currentTarget.reset(); flash('Media uploaded') } catch (reason) { guard(reason) }
   }
 
+  const uploadKnowledge = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); const form = new FormData(event.currentTarget)
+    setLoading(true); setError('')
+    try {
+      await adminApi.upload('/knowledge-documents', form, adminKey)
+      setKnowledgeUploads(await adminApi.get('/knowledge-documents', adminKey))
+      event.currentTarget.reset(); flash('Document uploaded and queued for indexing')
+    } catch (reason) { guard(reason) } finally { setLoading(false) }
+  }
+
+  const updateKnowledge = async (item: RecordValue, changes: RecordValue) => {
+    try {
+      await adminApi.patch(`/knowledge-documents/${item.id}`, changes, adminKey)
+      setKnowledgeUploads(await adminApi.get('/knowledge-documents', adminKey)); flash('Knowledge document updated')
+    } catch (reason) { guard(reason) }
+  }
+
+  const deleteKnowledge = async (item: RecordValue) => {
+    if (!window.confirm(`Delete ${String(item.title || item.filename || 'this document')}?`)) return
+    try {
+      await adminApi.delete(`/knowledge-documents/${item.id}`, adminKey)
+      setKnowledgeUploads(await adminApi.get('/knowledge-documents', adminKey)); flash('Knowledge document deleted')
+    } catch (reason) { guard(reason) }
+  }
+
   const askHelper = async (event: FormEvent) => {
     event.preventDefault()
     const message = helperInput.trim(); if (!message) return
@@ -180,7 +212,7 @@ export default function AdminPage() {
 
   if (!verified) return <AdminLogin onLogin={login} />
 
-  const tabs: [Tab, string][] = [['overview','Overview'],['helper','Content Helper'],['profile','Profile'],['projects','Projects'],['notes','Field Notes'],['content','Site Content'],['media','Media'],['inbox','Inbox'],['rag','AI / RAG']]
+  const tabs: [Tab, string][] = [['overview','Overview'],['helper','Content Helper'],['profile','Profile'],['about','About page'],['projects','Projects'],['notes','Field Notes'],['content','Site Content'],['media','Media'],['inbox','Inbox'],['rag','AI / RAG']]
 
   return <main className="admin-page">
     <aside className="admin-sidebar"><a href="/" className="admin-brand">h.<span>control</span></a><nav>{tabs.map(([id,label]) => <button className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)} key={id}>{label}</button>)}</nav><div><span>{API_BASE}</span><button onClick={logout}>Lock session</button></div></aside>
@@ -192,7 +224,9 @@ export default function AdminPage() {
 
       {tab === 'helper' && <section className="admin-helper"><div className="admin-helper__intro"><span>Private content copilot</span><h2>Describe what you want to publish or change.</h2><p>Ask for a Field Note draft, a project update, profile copy, a site setting, or a new page section. The helper proposes structured data first and writes only after your confirmation.</p><div><button onClick={() => setHelperInput('Draft a Field Note about a failed evaluation hiding inside an average metric.')}>Draft a Field Note</button><button onClick={() => setHelperInput('Create a draft project record for an ML systems experiment.')}>Draft a project</button><button onClick={() => setHelperInput('Improve my About profile headline without inventing any experience.')}>Improve profile copy</button></div></div><div className="admin-helper__chat"><div className="admin-helper__messages">{helperMessages.length === 0 && <p className="admin-helper__empty">No conversation yet. The helper uses current database records as context.</p>}{helperMessages.map((message,index) => <article className={`is-${message.role}`} key={`${message.role}-${index}`}><span>{message.role}</span><p>{message.content}</p></article>)}{helperBusy && <article className="is-assistant"><span>assistant</span><p>Preparing a structured proposal…</p></article>}</div>{helperProposal && <div className="admin-helper__proposal"><header><div><span>Review required</span><strong>{String(helperProposal.summary || helperProposal.action)}</strong></div><button onClick={() => setHelperProposal(null)}>Discard</button></header><pre>{JSON.stringify(helperProposal, null, 2)}</pre><button onClick={executeHelperProposal} disabled={helperBusy}>Confirm and apply →</button></div>}<form onSubmit={askHelper}><textarea rows={3} value={helperInput} onChange={(event) => setHelperInput(event.target.value)} placeholder="Create a Field Note about…" /><button disabled={helperBusy || !helperInput.trim()}>Send →</button></form></div></section>}
 
-      {tab === 'profile' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Public profile</h2><p>Identity, links, working set, current activity, and résumé information.</p></div><button onClick={() => openEditor('profile', profile)}>Edit profile</button></div><pre>{JSON.stringify(profile, null, 2)}</pre></section>}
+      {tab === 'profile' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Public profile</h2><p>Identity, links, working set, current activity, and résumé information.</p></div><button onClick={() => openEditor('profile', profile)}>Edit raw JSON</button></div><pre>{JSON.stringify(profile, null, 2)}</pre></section>}
+
+      {tab === 'about' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>About page</h2><p>Bio, experience, domains, technologies, and the bookshelf shown on the About page.</p></div></div><AboutEditor profile={profile} adminKey={adminKey} onSaved={(saved) => { setProfile(saved); flash('About content saved') }} onError={guard} /></section>}
 
       {tab === 'projects' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Project records</h2><p>Manage homepage cards and full engineering records.</p></div><button onClick={() => openEditor('project', projectTemplate)}>New project</button></div><div className="admin-table">{projects.map((item) => <article key={String(item.id)}><span>{String(item.index_label)}</span><div><strong>{String(item.title)}</strong><small>{String(item.domain)} · {String(item.status)}</small></div><em className={item.published ? 'is-live' : ''}>{item.published ? 'Published' : 'Draft'}</em><button onClick={() => openEditor('project', item)}>Edit</button><button className="is-danger" onClick={() => remove('project', item)}>Delete</button></article>)}</div></section>}
 
@@ -204,7 +238,7 @@ export default function AdminPage() {
 
       {tab === 'inbox' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Contact inbox</h2><p>Messages submitted through the portfolio contact system.</p></div></div><div className="admin-inbox">{inbox.map((item) => <article key={String(item.id)}><header><div><strong>{String(item.name)}</strong><a href={`mailto:${String(item.email)}`}>{String(item.email)}</a></div><select value={String(item.status)} onChange={async (event) => { await adminApi.patch(`/contact/${item.id}`, { status: event.target.value }, adminKey); setInbox(await adminApi.get('/contact', adminKey)) }}>{['new','read','replied','archived','spam'].map((status) => <option key={status}>{status}</option>)}</select></header><span>{String(item.topic)}</span><p>{String(item.message)}</p><footer><time>{new Date(String(item.created_at)).toLocaleString()}</time><button onClick={() => remove('contact', item)}>Delete</button></footer></article>)}</div></section>}
 
-      {tab === 'rag' && <><div className="admin-metrics">{[['Documents',rag.documents||0],['Chunks',rag.chunks||0],['Embedded',rag.embedded_chunks||0],['Model',rag.embedding_model||'—']].map(([label,value]) => <div key={String(label)}><strong>{String(value)}</strong><span>{String(label)}</span></div>)}</div><section className="admin-panel"><div className="admin-panel__head"><div><h2>Knowledge pipeline</h2><p>Rebuild embeddings after importing or editing portfolio evidence.</p></div><div className="admin-inline"><button disabled={loading} onClick={() => reindex(false)}>Incremental reindex</button><button disabled={loading} onClick={() => reindex(true)}>Force rebuild</button></div></div><div className="admin-table">{sources.map((item) => <article key={String(item.id)}><span>{String(item.source_type)}</span><div><strong>{String(item.title)}</strong><small>{String(item.url)}</small></div><em className={item.enabled ? 'is-live' : ''}>{item.enabled ? 'Enabled' : 'Disabled'}</em><button onClick={async () => { await adminApi.patch(`/ai/sources/${item.id}/toggle`, {}, adminKey); setSources(await adminApi.get('/ai/sources', adminKey)) }}>Toggle</button></article>)}</div></section></>}
+      {tab === 'rag' && <><div className="admin-metrics">{[['Documents',rag.documents||0],['Chunks',rag.chunks||0],['Embedded',rag.embedded_chunks||0],['Uploads',knowledgeUploads.length],['Model',rag.embedding_model||'—']].map(([label,value]) => <div key={String(label)}><strong>{String(value)}</strong><span>{String(label)}</span></div>)}</div><section className="admin-panel"><div className="admin-panel__head"><div><h2>Knowledge library</h2><p>Upload PDF, DOCX, Markdown, or text. Only public, enabled documents are available to the visitor assistant.</p></div><form className="admin-upload admin-upload--knowledge" onSubmit={uploadKnowledge}><input type="file" name="file" accept=".pdf,.docx,.md,.markdown,.txt" required /><input name="title" placeholder="Document title" required /><input name="related_project" placeholder="Related project slug" /><select name="visibility" defaultValue="public" title="This controls chatbot indexing; the current R2 bucket itself is public"><option value="public">Public + indexed</option><option value="internal">Excluded from public chat</option><option value="private">Excluded from all public retrieval</option></select><button disabled={loading}>Upload</button></form></div><div className="admin-table">{knowledgeUploads.map((item) => <article key={String(item.id)}><span>{String(item.document_type)}</span><div><strong>{String(item.title)}</strong><small>{String(item.filename)} · {String(item.chunk_count || 0)} chunks</small></div><em className={item.status === 'indexed' ? 'is-live' : ''}>{String(item.visibility)} · {String(item.status)}</em><button onClick={() => updateKnowledge(item, { enabled: !item.enabled })}>{item.enabled ? 'Disable' : 'Enable'}</button><button onClick={() => updateKnowledge(item, { visibility: item.visibility === 'public' ? 'private' : 'public' })}>{item.visibility === 'public' ? 'Make private' : 'Publish'}</button><button onClick={async () => { await adminApi.post(`/knowledge-documents/${item.id}/reindex`, {}, adminKey); setKnowledgeUploads(await adminApi.get('/knowledge-documents', adminKey)); flash('Reindex queued') }}>Reindex</button><button className="is-danger" onClick={() => deleteKnowledge(item)}>Delete</button></article>)}</div></section><section className="admin-panel"><div className="admin-panel__head"><div><h2>Knowledge pipeline</h2><p>Rebuild embeddings after importing or editing portfolio evidence.</p></div><div className="admin-inline"><button disabled={loading} onClick={() => reindex(false)}>Incremental reindex</button><button disabled={loading} onClick={() => reindex(true)}>Force rebuild</button></div></div><div className="admin-table">{sources.map((item) => <article key={String(item.id)}><span>{String(item.source_type)}</span><div><strong>{String(item.title)}</strong><small>{String(item.url)}</small></div><em className={item.enabled ? 'is-live' : ''}>{item.enabled ? 'Enabled' : 'Disabled'}</em><button onClick={async () => { await adminApi.patch(`/ai/sources/${item.id}/toggle`, {}, adminKey); setSources(await adminApi.get('/ai/sources', adminKey)) }}>Toggle</button></article>)}</div></section></>}
     </section>
 
     {editorMode && selected && <div className="admin-modal" role="dialog" aria-modal="true"><div><header><div><span>{editorMode}</span><h2>{String(selected.title || selected.key || selected.name || 'New record')}</h2></div><button onClick={closeEditor} aria-label="Close editor">×</button></header><JsonEditor label="Record JSON" value={selected} onChange={setSelected} /><footer><button onClick={closeEditor}>Cancel</button><button onClick={saveEditor} disabled={loading}>{loading ? 'Saving…' : 'Save changes'}</button></footer></div></div>}

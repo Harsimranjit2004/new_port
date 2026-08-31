@@ -24,6 +24,8 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}, adm
 }
 
 export const adminApi = {
+  login: (username: string, password: string) =>
+    apiRequest<{ token: string; expires_in: number }>('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
   get: <T>(path: string, key: string) => apiRequest<T>(path, {}, key),
   post: <T>(path: string, body: unknown, key: string) => apiRequest<T>(path, { method: 'POST', body: JSON.stringify(body) }, key),
   put: <T>(path: string, body: unknown, key: string) => apiRequest<T>(path, { method: 'PUT', body: JSON.stringify(body) }, key),

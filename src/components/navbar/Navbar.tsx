@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { publicApi, settingsMap } from '../../lib/publicApi'
 
 export type NavigationItem = { label: string; href: string }
 
@@ -112,6 +113,33 @@ export default function Navbar({
   const headerRef = useRef<HTMLElement>(null)
   const reducedMotion = useReducedMotion()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [dynamicBrand, setDynamicBrand] = useState(brand)
+  const [dynamicMonogram, setDynamicMonogram] = useState(monogram)
+  const [dynamicItems, setDynamicItems] = useState(items)
+
+  useEffect(() => {
+    let active = true
+    Promise.allSettled([publicApi.profile(), publicApi.settings()]).then(([profileResult, settingsResult]) => {
+      if (!active) return
+      const profile = profileResult.status === 'fulfilled' ? profileResult.value : undefined
+      const settings = settingsResult.status === 'fulfilled' ? settingsMap(settingsResult.value) : {}
+      const name = typeof settings.nav_brand === 'string' ? settings.nav_brand : profile?.name
+      if (name) setDynamicBrand(name)
+      const mark = typeof settings.nav_monogram === 'string' ? settings.nav_monogram : undefined
+      if (mark) setDynamicMonogram(mark)
+      else if (name) setDynamicMonogram(`${name.trim().charAt(0).toLowerCase()}.`)
+
+      let navigation = settings.navigation ?? settings.nav_items
+      if (typeof navigation === 'string') {
+        try { navigation = JSON.parse(navigation) } catch { navigation = undefined }
+      }
+      if (Array.isArray(navigation)) {
+        const valid = (navigation as NavigationItem[]).filter((item) => item && typeof item.label === 'string' && typeof item.href === 'string')
+        if (valid.length) setDynamicItems(valid)
+      }
+    })
+    return () => { active = false }
+  }, [brand, items, monogram])
 
   useEffect(() => {
     const header = headerRef.current
@@ -165,13 +193,13 @@ export default function Navbar({
         <motion.a
           className="portable-ocean-nav__brand"
           href={homeHref}
-          aria-label={`${brand} — Home`}
+          aria-label={`${dynamicBrand} — Home`}
           initial={reducedMotion ? false : { opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.55, delay: 0.42 }}
         >
-          <span className="portable-ocean-nav__mark">{monogram}</span>
-          <span className="portable-ocean-nav__name">{brand}<span>.</span></span>
+          <span className="portable-ocean-nav__mark">{dynamicMonogram}</span>
+          <span className="portable-ocean-nav__name">{dynamicBrand}<span>.</span></span>
         </motion.a>
         <button
           className="portable-ocean-nav__menu-button"
@@ -184,7 +212,7 @@ export default function Navbar({
           <span>{menuOpen ? 'Close' : 'Menu'}</span><i aria-hidden="true" />
         </button>
         <nav id="portable-ocean-nav-menu" aria-label="Main navigation">
-          {items.map((item, index) => (
+          {dynamicItems.map((item, index) => (
             <motion.a
               href={item.href}
               key={item.href}

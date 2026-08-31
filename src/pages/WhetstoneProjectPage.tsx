@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
 import { ProjectDetailPage, type ProjectDetailConfig } from '../components/project-detail'
+import type { ProjectPipelineStep } from '../components/project-record'
+import { publicApi, type PublicProject } from '../lib/publicApi'
 
 const whetstone: ProjectDetailConfig = {
   index: '01',
@@ -65,6 +68,90 @@ const whetstone: ProjectDetailConfig = {
   nextHref: '/work',
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {}
+}
+
+function section(project: PublicProject, id: string) {
+  return project.sections?.find((item) => item.id.toLowerCase() === id)
+}
+
+function toDetailConfig(project: PublicProject): ProjectDetailConfig {
+  const isWhetstone = project.slug === 'whetstone'
+  const fallback = isWhetstone ? whetstone : undefined
+  const extra = asRecord(project.extra)
+  const problem = section(project, 'problem')
+  const system = section(project, 'system')
+  const buildSections = project.sections?.filter((item) => !['problem', 'system'].includes(item.id.toLowerCase())) || []
+  const technologies = Array.isArray(project.technologies) ? project.technologies.map(String) : []
+  const pipeline = project.pipeline?.map((step) => step.label) || fallback?.pipeline || technologies
+  const evidencePipeline: ProjectPipelineStep[] = (project.pipeline || []).map((step) => ({
+    label: step.label,
+    state: step.state === 'complete' || step.state === 'skipped' || step.state === 'decision' ? step.state : undefined,
+  }))
+
+  return {
+    index: project.index_label || fallback?.index || String(project.sort_order ?? '').padStart(2, '0'),
+    domain: project.domain || fallback?.domain || 'Engineering',
+    status: project.status || fallback?.status || 'In progress',
+    year: String(project.year || fallback?.year || new Date().getFullYear()),
+    title: project.title,
+    thesis: project.thesis || project.question || fallback?.thesis || project.summary || '',
+    description: project.summary || fallback?.description || project.question || '',
+    metrics: (project.metrics?.length ? project.metrics.map((metric) => ({
+      value: String(metric.value ?? ''),
+      label: String(metric.label ?? ''),
+    })) : fallback?.metrics) || [],
+    pipeline,
+    problem: {
+      title: problem?.title || fallback?.problem.title || 'The problem',
+      copy: problem?.body || project.question || fallback?.problem.copy || project.summary || '',
+    },
+    system: {
+      title: system?.title || fallback?.system.title || 'System',
+      copy: system?.body || fallback?.system.copy || project.summary || '',
+      nodes: pipeline.length ? pipeline : fallback?.system.nodes || [],
+    },
+    stages: buildSections.length ? buildSections.map((item, index) => ({
+      index: String(index + 1).padStart(2, '0'),
+      label: item.id,
+      title: item.title,
+      detail: item.body,
+      state: project.status,
+    })) : fallback?.stages || [],
+    evidence: {
+      cmd: project.trace?.cmd || fallback?.evidence.cmd || `open ${project.slug}`,
+      result: project.trace?.result || fallback?.evidence.result || project.summary || 'Project record available',
+      pipeline: evidencePipeline.length ? evidencePipeline : fallback?.evidence.pipeline || [],
+      rows: project.trace?.rows || fallback?.evidence.rows || [],
+      checks: technologies.length ? technologies : fallback?.evidence.checks || [],
+    },
+    notes: fallback?.notes || [],
+    current: String(extra.current || fallback?.current || project.status || 'In progress'),
+    next: String(extra.next || fallback?.next || 'More work'),
+    nextHref: typeof extra.nextHref === 'string' ? extra.nextHref : fallback?.nextHref || '/work',
+    ...(fallback ? {
+      heroVisual: fallback.heroVisual,
+      plateImage: fallback.plateImage,
+      plateAlt: fallback.plateAlt,
+      plateCaption: fallback.plateCaption,
+    } : {}),
+  }
+}
+
 export default function WhetstoneProjectPage() {
-  return <ProjectDetailPage project={whetstone} />
+  const slug = window.location.pathname.replace(/\/+$/, '').split('/').filter(Boolean).pop() || 'whetstone'
+  const [project, setProject] = useState<ProjectDetailConfig>(() => slug === 'whetstone'
+    ? whetstone
+    : toDetailConfig({ slug, title: slug.split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ') }))
+
+  useEffect(() => {
+    let active = true
+    publicApi.project(slug)
+      .then((record) => { if (active) setProject(toDetailConfig(record)) })
+      .catch(() => undefined)
+    return () => { active = false }
+  }, [slug])
+
+  return <ProjectDetailPage project={project} />
 }

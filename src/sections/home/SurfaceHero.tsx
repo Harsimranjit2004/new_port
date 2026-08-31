@@ -4,13 +4,26 @@ import type { RefObject } from 'react'
 interface SurfaceHeroProps {
   heroRef: RefObject<HTMLElement | null>
   reducedMotion: boolean
+  name?: string
+  role?: string
+  eyebrow?: string
+  disciplines?: string[]
 }
 
-const name = 'Harsimranjit'
-const expertise = ['Machine learning', 'ML systems', 'Research & experimentation']
+const fallbackName = 'Harsimranjit'
+const fallbackRole = 'ML / AI engineer'
+const fallbackEyebrow = 'Engineering beneath the surface'
+const fallbackDisciplines = ['Machine learning', 'ML systems', 'Research & experimentation']
 const ease = [0.22, 1, 0.36, 1] as const
 
-export default function SurfaceHero({ heroRef, reducedMotion }: SurfaceHeroProps) {
+export default function SurfaceHero({
+  heroRef,
+  reducedMotion,
+  name = fallbackName,
+  role = fallbackRole,
+  eyebrow = fallbackEyebrow,
+  disciplines = fallbackDisciplines,
+}: SurfaceHeroProps) {
   return (
     <section ref={heroRef} className="white-surface" aria-labelledby="home-name">
       <div className="atmosphere-scroll" aria-hidden="true">
@@ -25,7 +38,7 @@ export default function SurfaceHero({ heroRef, reducedMotion }: SurfaceHeroProps
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ duration: 0.7, delay: 0.35, ease: 'easeOut' }}
         >
-          Engineering beneath the surface <span aria-hidden="true">—</span> ML / AI engineer
+          {eyebrow} <span aria-hidden="true">—</span> {role}
         </motion.p>
 
         <motion.h1 id="home-name" aria-label={name}>
@@ -44,7 +57,7 @@ export default function SurfaceHero({ heroRef, reducedMotion }: SurfaceHeroProps
         </motion.h1>
 
         <p className="hero-type__line hero-type__line--disciplines">
-          {expertise.map((item, index) => (
+          {disciplines.map((item, index) => (
             <span className="expertise-entry" key={item}>
               <motion.span
                 initial={reducedMotion ? false : { opacity: 0, y: 14 }}
@@ -54,7 +67,7 @@ export default function SurfaceHero({ heroRef, reducedMotion }: SurfaceHeroProps
               >
                 {item}
               </motion.span>
-              {index < expertise.length - 1 && <span className="expertise-separator" aria-hidden="true">—</span>}
+              {index < disciplines.length - 1 && <span className="expertise-separator" aria-hidden="true">—</span>}
             </span>
           ))}
         </p>

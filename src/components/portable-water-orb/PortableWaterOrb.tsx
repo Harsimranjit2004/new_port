@@ -79,7 +79,7 @@ const styles = `
 .portable-water-orb__canvas{position:absolute;inset:-13%;width:126%;height:126%;max-width:none;max-height:none;aspect-ratio:1/1}
 .portable-water-orb__label{position:absolute;right:calc(100% + 5px);top:50%;width:max-content;padding:7px 10px;color:#071a2e;border:1px solid rgba(7,26,46,.08);border-radius:999px;background:rgba(246,248,250,.82);box-shadow:0 8px 24px rgba(7,26,46,.08);backdrop-filter:blur(12px);font:600 10px ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;transform:translateY(-50%);transition:opacity .25s ease}
 .portable-water-orb.is-open .portable-water-orb__label{opacity:0}
-.portable-water-orb__panel{position:absolute;right:4px;bottom:calc(100% + 20px);width:min(350px,calc(100vw - 36px));padding:22px;color:var(--orb-panel-text);border:1px solid var(--orb-panel-line);border-radius:20px 20px 5px 20px;background:var(--orb-panel-bg);box-shadow:0 25px 70px rgba(0,12,18,.38);backdrop-filter:blur(18px);opacity:0;visibility:hidden;transform:translateY(12px) scale(.97);transform-origin:bottom right;transition:.28s ease}
+.portable-water-orb__panel{position:absolute;right:4px;bottom:calc(100% + 20px);width:min(350px,calc(100vw - 36px));max-height:min(32rem,calc(100vh - 140px));padding:22px;overflow-y:auto;overscroll-behavior:contain;color:var(--orb-panel-text);border:1px solid var(--orb-panel-line);border-radius:20px 20px 5px 20px;background:var(--orb-panel-bg);box-shadow:0 25px 70px rgba(0,12,18,.38);backdrop-filter:blur(18px);opacity:0;visibility:hidden;transform:translateY(12px) scale(.97);transform-origin:bottom right;transition:.28s ease}
 .portable-water-orb.is-open .portable-water-orb__panel{opacity:1;visibility:visible;transform:none}
 .portable-water-orb__panel h2{margin:0 30px 8px 0;font:500 21px/1.15 system-ui,sans-serif;letter-spacing:-.03em}
 .portable-water-orb__panel p{margin:0;color:var(--orb-panel-muted);font:400 13px/1.55 system-ui,sans-serif}
@@ -175,7 +175,7 @@ export default function PortableWaterOrb({
   return <>
     <style>{styles}</style>
     <aside className={`portable-water-orb${open ? ' is-open' : ''}${underwater ? ' is-underwater' : ''}`} style={{ '--orb-requested-size': `${size}px` } as CSSProperties}>
-      <div className="portable-water-orb__panel" id="portable-water-orb-panel" role="dialog" aria-hidden={!open} aria-label={panelTitle}>
+      <div className="portable-water-orb__panel" id="portable-water-orb-panel" role="dialog" aria-hidden={!open} aria-label={panelTitle} data-lenis-prevent>
         <button className="portable-water-orb__close" type="button" onClick={toggle} aria-label="Close panel">×</button>
         <h2>{panelTitle}</h2>
         {panelContent}

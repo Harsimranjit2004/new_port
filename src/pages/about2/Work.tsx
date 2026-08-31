@@ -11,10 +11,16 @@ function DomainIcon({ index }: { index: number }) {
     <><path d="M4 19V5M4 19h16M7 15l4-4 3 2 5-6" /><circle cx="19" cy="7" r="1" /></>,
     <><path d="m12 2 8 4.5v11L12 22l-8-4.5v-11L12 2Z" /><path d="m4 6.5 8 4.5 8-4.5M12 11v11" /></>,
   ]
-  return <svg viewBox="0 0 24 24" aria-hidden="true">{icons[index]}</svg>
+  return <svg viewBox="0 0 24 24" aria-hidden="true">{icons[index % icons.length]}</svg>
 }
 
-export default function Work() {
+type WorkProps = {
+  experienceItems?: typeof experience
+  domains?: typeof workDomains
+  technologyItems?: string[]
+}
+
+export default function Work({ experienceItems = experience, domains = workDomains, technologyItems = technologies }: WorkProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(false)
 
@@ -34,5 +40,5 @@ export default function Work() {
     return () => observer.disconnect()
   }, [])
 
-  return <section className="a2-work" ref={sectionRef} data-visible={visible} aria-labelledby="a2-work-heading"><div className="a2-shell"><header className="a2-work__header"><p className="a2-eyebrow">02 / Experience</p><h2 id="a2-work-heading">Experience and technical practice</h2></header><div className="a2-work__grid"><section className="a2-work__column a2-work__experience" aria-labelledby="a2-experience-title"><h3 id="a2-experience-title">Experience</h3><ol className="a2-timeline">{experience.map((item) => <li className={item.placeholder ? 'is-placeholder' : ''} key={`${item.period}-${item.role}`}><time>{item.period}</time><strong>{item.role}</strong><span>{item.company}</span><p>{item.description}</p></li>)}</ol></section><section className="a2-work__column" aria-labelledby="a2-domains-title"><h3 id="a2-domains-title">Things I work with</h3><ul className="a2-domains">{workDomains.map((domain, index) => <li key={domain.name}><DomainIcon index={index} /><span>{domain.name}</span><i className={`is-${domain.trace}`} aria-hidden="true"><b /></i></li>)}</ul></section><section className="a2-work__column" aria-labelledby="a2-technologies-title"><h3 id="a2-technologies-title">Technologies I use</h3><ul className="a2-technologies">{technologies.map((technology) => <li key={technology}>{technology}</li>)}</ul></section></div></div></section>
+  return <section className="a2-work" ref={sectionRef} data-visible={visible} aria-labelledby="a2-work-heading"><div className="a2-shell"><header className="a2-work__header"><p className="a2-eyebrow">02 / Experience</p><h2 id="a2-work-heading">Experience and technical practice</h2></header><div className="a2-work__grid"><section className="a2-work__column a2-work__experience" aria-labelledby="a2-experience-title"><h3 id="a2-experience-title">Experience</h3><ol className="a2-timeline">{experienceItems.map((item) => <li className={item.placeholder ? 'is-placeholder' : ''} key={`${item.period}-${item.role}`}><time>{item.period}</time><strong>{item.role}</strong><span>{item.company}</span><p>{item.description}</p></li>)}</ol></section><section className="a2-work__column" aria-labelledby="a2-domains-title"><h3 id="a2-domains-title">Things I work with</h3><ul className="a2-domains">{domains.map((domain, index) => <li key={domain.name}><DomainIcon index={index} /><span>{domain.name}</span><i className={`is-${domain.trace}`} aria-hidden="true"><b /></i></li>)}</ul></section><section className="a2-work__column" aria-labelledby="a2-technologies-title"><h3 id="a2-technologies-title">Technologies I use</h3><ul className="a2-technologies">{technologyItems.map((technology) => <li key={technology}>{technology}</li>)}</ul></section></div></div></section>
 }

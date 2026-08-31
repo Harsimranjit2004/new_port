@@ -31,14 +31,12 @@ body {
 
 .global-orb-chat__messages {
   display: grid;
-  max-height: 11rem;
   gap: .55rem;
   margin-top: 1rem;
-  padding-right: .2rem;
-  overflow-y: auto;
 }
 
-.global-orb-chat__messages > div {
+.global-orb-chat__messages > .is-user,
+.global-orb-chat__messages > .is-assistant {
   max-width: 88%;
   padding: .65rem .75rem;
   color: var(--orb-panel-text);
@@ -105,4 +103,22 @@ body {
   font-size: 1rem;
   cursor: pointer;
 }
-.global-orb-chat form button:disabled { opacity: .4; cursor: default; }
+.global-orb-chat form button:disabled,
+.global-orb-chat__suggestions button:disabled { opacity: .4; cursor: default; }
+
+.global-orb-chat__messages > .is-pending { color: var(--orb-panel-muted); }
+
+.global-orb-chat__sources,
+.global-orb-chat__actions { display: grid; gap: .35rem; margin-top: .65rem; padding-top: .55rem; border-top: 1px solid var(--orb-panel-line); }
+.global-orb-chat__sources small { color: var(--orb-panel-muted); font: 600 7px/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.global-orb-chat__sources a,
+.global-orb-chat__actions a { display: flex; justify-content: space-between; gap: .5rem; color: var(--orb-panel-text); font: 500 8px/1.35 ui-monospace, monospace; text-decoration: none; }
+.global-orb-chat__sources i { color: var(--orb-panel-muted); font-style: normal; text-transform: uppercase; }
+.global-orb-chat__actions a { color: #56c7d3; }
+
+.global-orb-chat__error {
+  margin: .75rem 0 0;
+  color: #d66f6f;
+  font-size: .72rem;
+  line-height: 1.4;
+}

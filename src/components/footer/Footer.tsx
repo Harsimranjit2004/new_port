@@ -1,4 +1,6 @@
+import { useEffect, useState, type ReactNode } from 'react'
 import { FaGithub, FaLinkedinIn, FaTwitter } from 'react-icons/fa'
+import { publicApi, settingString, settingsMap, type PublicFieldNote, type PublicProfile, type SocialLink } from '../../lib/publicApi'
 import './Footer.css'
 
 function Icon({ name }: { name: 'github' | 'linkedin' | 'mail' | 'file' | 'arrow' }) {
@@ -13,7 +15,54 @@ function Icon({ name }: { name: 'github' | 'linkedin' | 'mail' | 'file' | 'arrow
 }
 
 
+const fallbackProfile: PublicProfile = { name: 'Harsimranjit', role: 'ML / AI Engineer', location: 'Toronto', email: 'hello@example.com', social_links: [
+  { label: 'GitHub', url: 'https://github.com/' }, { label: 'LinkedIn', url: 'https://www.linkedin.com/' }, { label: 'Twitter', url: 'https://twitter.com/' },
+] }
+const fallbackNote: PublicFieldNote = { slug: 'tokenizer-native-backend', title: 'Why the tokenizer needed a native backend', excerpt: 'Python defined the behaviour correctly. It just could not train fast enough to be the whole story.', published_at: '2026-08-11', project: 'Whetstone', read_time: '4 min' }
+const fallbackNavigation = [{ label: 'Overview', href: '/' }, { label: 'Work', href: '/work' }, { label: 'Field Notes', href: '/field-notes' }, { label: 'About', href: '/about' }, { label: 'Contact', href: '/contact' }]
+
+function socialIcon(label: string): ReactNode {
+  const normalized = label.toLowerCase()
+  if (normalized.includes('github')) return <FaGithub />
+  if (normalized.includes('linkedin')) return <FaLinkedinIn />
+  if (normalized.includes('twitter') || normalized.includes('x')) return <FaTwitter />
+  return <Icon name="arrow" />
+}
+
+function parseNavigation(value: unknown) {
+  if (typeof value === 'string') { try { value = JSON.parse(value) } catch { return fallbackNavigation } }
+  if (!Array.isArray(value)) return fallbackNavigation
+  const items = value.filter((item): item is { label: string; href: string } => Boolean(item && typeof item.label === 'string' && typeof item.href === 'string'))
+  return items.length ? items : fallbackNavigation
+}
+
 export default function Footer() {
+  const [profile, setProfile] = useState(fallbackProfile)
+  const [settings, setSettings] = useState<Record<string, unknown>>({})
+  const [note, setNote] = useState(fallbackNote)
+
+  useEffect(() => {
+    let active = true
+    Promise.allSettled([publicApi.profile(), publicApi.settings(), publicApi.fieldNotes()]).then(([profileResult, settingsResult, notesResult]) => {
+      if (!active) return
+      if (profileResult.status === 'fulfilled') setProfile({ ...fallbackProfile, ...profileResult.value })
+      if (settingsResult.status === 'fulfilled') setSettings(settingsMap(settingsResult.value))
+      if (notesResult.status === 'fulfilled') {
+        const byNewest = [...notesResult.value].sort((a, b) => Date.parse(b.published_at ?? b.created_at ?? '') - Date.parse(a.published_at ?? a.created_at ?? ''))
+        const latest = byNewest.find((item) => item.featured === true) ?? byNewest[0]
+        if (latest) setNote({ ...fallbackNote, ...latest })
+      }
+    })
+    return () => { active = false }
+  }, [])
+
+  const navigation = parseNavigation(settings.footer_navigation ?? settings.navigation ?? settings.nav_items)
+  const noteDate = note.published_at ?? note.created_at
+  const parsedDate = noteDate ? new Date(noteDate) : null
+  const formattedDate = parsedDate && !Number.isNaN(parsedDate.valueOf()) ? new Intl.DateTimeFormat('en', { day: '2-digit', month: 'short' }).format(parsedDate) : '11 Aug'
+  const socialLinks: SocialLink[] = profile.social_links?.length ? profile.social_links : fallbackProfile.social_links!
+  const resumeHref = profile.resume_url || `mailto:${profile.email}?subject=${encodeURIComponent('Résumé request')}`
+
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
@@ -21,26 +70,20 @@ export default function Footer() {
           <section className="site-footer__identity" aria-label="Identity and external links">
             <div className="site-footer__identity-copy">
               <div className="site-footer__identity-heading">
-                <span className="site-footer__brand-mark" aria-hidden="true">h.</span>
-                <div><p className="site-footer__name">Harsimranjit<span>.</span></p><p className="site-footer__role">ML / AI Engineer</p></div>
+                <span className="site-footer__brand-mark" aria-hidden="true">{settingString(settings, ['footer_monogram', 'nav_monogram'], `${profile.name?.charAt(0).toLowerCase() || 'h'}.`)}</span>
+                <div><p className="site-footer__name">{profile.name}<span>.</span></p><p className="site-footer__role">{profile.role}</p></div>
               </div>
             </div>
             <nav className="site-footer__social" aria-label="External links">
-              <a href="https://github.com/" aria-label="GitHub"><FaGithub /><span>GitHub</span></a>
-              <a href="https://www.linkedin.com/" aria-label="LinkedIn"><FaLinkedinIn /><span>LinkedIn</span></a>
-              <a href="https://twitter.com/" aria-label="Twitter"><FaTwitter /><span>Twitter</span></a>
-              <a className="site-footer__resume" href="mailto:hello@example.com?subject=R%C3%A9sum%C3%A9%20request"><Icon name="file" /><span>Request résumé</span></a>
+              {socialLinks.map((link) => <a href={link.url} aria-label={link.label} key={`${link.label}-${link.url}`}>{socialIcon(link.label)}<span>{link.label}</span></a>)}
+              <a className="site-footer__resume" href={resumeHref}><Icon name="file" /><span>{profile.resume_url ? 'View résumé' : 'Request résumé'}</span></a>
             </nav>
           </section>
 
           <section className="site-footer__navigation" aria-labelledby="footer-navigation-title">
             <p id="footer-navigation-title" className="site-footer__label">Navigation</p>
             <nav aria-label="Footer navigation">
-              <a href="/"><span>01</span>Overview</a>
-              <a href="/work"><span>02</span>Work</a>
-              <a href="/field-notes"><span>03</span>Field Notes</a>
-              <a href="/about"><span>04</span>About</a>
-              <a href="/contact"><span>05</span>Contact</a>
+              {navigation.map((item, index) => <a href={item.href} key={item.href}><span>{String(index + 1).padStart(2, '0')}</span>{item.label}</a>)}
             </nav>
           </section>
 
@@ -49,19 +92,19 @@ export default function Footer() {
               <p id="footer-notes-title" className="site-footer__label">Field Note</p>
               <a href="/field-notes">Archive <Icon name="arrow" /></a>
             </div>
-            <a className="site-footer__field-card" href="/field-notes/tokenizer-native-backend">
-              <span>11 Aug · Whetstone</span>
-              <strong>Why the tokenizer needed a native backend</strong>
-              <p>Python defined the behaviour correctly. It just could not train fast enough to be the whole story.</p>
-              <small>4 min read <Icon name="arrow" /></small>
+            <a className="site-footer__field-card" href={`/field-notes/${note.slug || fallbackNote.slug}`}>
+              <span>{formattedDate} · {String(note.project ?? note.note_type ?? 'Field note')}</span>
+              <strong>{note.title}</strong>
+              <p>{String(note.excerpt ?? note.summary ?? fallbackNote.excerpt)}</p>
+              <small>{String(note.read_time ?? '4 min')} read <Icon name="arrow" /></small>
             </a>
-            <a className="site-footer__contact-signal" href="/contact"><i aria-hidden="true" /> Channel open · Start a conversation <Icon name="arrow" /></a>
+            <a className="site-footer__contact-signal" href="/contact"><i aria-hidden="true" /> {settingString(settings, ['footer_contact_signal'], 'Channel open · Start a conversation')} <Icon name="arrow" /></a>
           </section>
         </div>
 
         <div className="site-footer__base">
-          <span>Toronto · 2026</span>
-          <span>Built beneath the surface</span>
+          <span>{profile.location || 'Toronto'} · {new Date().getFullYear()}</span>
+          <span>{settingString(settings, ['footer_tagline'], 'Built beneath the surface')}</span>
           <a href="/">Return to surface ↑</a>
         </div>
       </div>

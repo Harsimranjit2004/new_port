@@ -1,10 +1,12 @@
+import { useEffect, useState } from 'react'
 import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
 import { OceanBackground } from '../components/ocean'
+import { publicApi } from '../lib/publicApi'
 import ProjectRecordShowcase from './ProjectRecordShowcase'
 import './WorkPage.css'
 
-const explorations = [
+const fallbackExplorations = [
   {
     index: '06', domain: 'ML observability', status: 'Concept study', title: 'Drift Signals',
     question: 'Which changes deserve attention before monitoring becomes another source of noise?',
@@ -18,6 +20,30 @@ const explorations = [
 ]
 
 export default function WorkPage() {
+  const [explorations, setExplorations] = useState(fallbackExplorations)
+
+  useEffect(() => {
+    let active = true
+    publicApi.projects()
+      .then((projects) => {
+        const records = projects
+          .filter((project) => project.featured === false)
+          .map((project) => ({
+            index: project.index_label || String(project.sort_order ?? '').padStart(2, '0'),
+            domain: project.domain || 'Engineering',
+            status: project.status || 'Exploring',
+            title: project.title,
+            question: project.question || project.thesis || project.summary || '',
+            signal: project.pipeline?.map((step) => step.label.toUpperCase()).join(' → ') || 'DISCOVER → BUILD → LEARN',
+            note: project.summary || 'Ongoing project exploration',
+            href: `/work/${project.slug}`,
+          }))
+        if (active) setExplorations(records)
+      })
+      .catch(() => undefined)
+    return () => { active = false }
+  }, [])
+
   return (
     <main className="work-page">
       <Navbar submergedAt={0} />

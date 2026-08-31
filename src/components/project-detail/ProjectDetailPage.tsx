@@ -176,8 +176,8 @@ export default function ProjectDetailPage({ project }: { project: ProjectDetailC
               </section>
 
               <nav className="pd-record-nav" aria-label="Project navigation">
-                <span><small>Current</small>{project.current}</span>
-                <a href={project.nextHref ?? '/work'}><small>Next</small>{project.next} →</a>
+                <span><small>Current</small><strong>{project.current}</strong></span>
+                <a href={project.nextHref ?? '/work'}><small>Next</small><strong>{project.next} →</strong></a>
               </nav>
             </div>
           </div>

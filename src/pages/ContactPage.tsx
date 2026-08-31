@@ -1,23 +1,51 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Footer } from '../components/footer'
 import { Navbar } from '../components/navbar'
 import { OceanBackground } from '../components/ocean'
+import { publicApi, type PublicProfile, type SitePageSection } from '../lib/publicApi'
 import './ContactPage.css'
 
 export default function ContactPage() {
-  const [sent, setSent] = useState(false)
+  const [profile, setProfile] = useState<PublicProfile>({ name: 'Harsimranjit', role: 'ML / AI Engineer', location: 'Toronto, Canada', email: 'hello@example.com' })
+  const [content, setContent] = useState<Record<string, unknown>>({})
+  const [status, setStatus] = useState<'idle' | 'busy' | 'success' | 'error'>('idle')
+  const [error, setError] = useState('')
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    let active = true
+    Promise.allSettled([publicApi.profile(), publicApi.contactPage()]).then(([profileResult, pageResult]) => {
+      if (!active) return
+      if (profileResult.status === 'fulfilled') setProfile((fallback) => ({ ...fallback, ...profileResult.value }))
+      if (pageResult.status === 'fulfilled') {
+        const payload = pageResult.value
+        if (Array.isArray(payload)) {
+          const merged = (payload as SitePageSection[]).filter((section) => section.enabled !== false).reduce<Record<string, unknown>>((result, section) => ({ ...result, ...(section.content ?? {}) }), {})
+          setContent(merged)
+        } else setContent(payload)
+      }
+    })
+    return () => { active = false }
+  }, [])
+
+  const copy = (key: string, fallback: string) => typeof content[key] === 'string' && content[key] ? String(content[key]) : fallback
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    const name = String(data.get('name') ?? '')
-    const email = String(data.get('email') ?? '')
-    const topic = String(data.get('topic') ?? 'General inquiry')
-    const message = String(data.get('message') ?? '')
-    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`)
-    const body = encodeURIComponent(`Topic: ${topic}\n\n${message}\n\nFrom: ${name}\nReply to: ${email}`)
-    setSent(true)
-    window.location.href = `mailto:hello@example.com?subject=${subject}&body=${body}`
+    const form = event.currentTarget
+    const data = new FormData(form)
+    setStatus('busy')
+    setError('')
+    try {
+      await publicApi.contact({
+        name: String(data.get('name') ?? ''), email: String(data.get('email') ?? ''),
+        topic: String(data.get('topic') || 'General inquiry'), message: String(data.get('message') ?? ''), website: '',
+      })
+      form.reset()
+      setStatus('success')
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'The transmission could not be sent. Please try again.')
+      setStatus('error')
+    }
   }
 
   return (
@@ -35,26 +63,25 @@ export default function ContactPage() {
         <section className="contact-layout">
           <div className="contact-intro">
             <span className="contact-label">Next / conversation</span>
-            <h1>Have something interesting to build?</h1>
-            <p>I am interested in ML systems, model infrastructure, evaluation, and engineering problems where understanding the path matters as much as the result.</p>
+            <h1>{copy('title', copy('heading', 'Have something interesting to build?'))}</h1>
+            <p>{copy('intro', copy('description', profile.biography || 'I am interested in ML systems, model infrastructure, evaluation, and engineering problems where understanding the path matters as much as the result.'))}</p>
 
             <dl className="contact-readout">
-              <div><dt>Based in</dt><dd>Toronto, Canada</dd></div>
-              <div><dt>Focus</dt><dd>ML / AI Engineering</dd></div>
-              <div><dt>Response</dt><dd>As soon as the signal is clear</dd></div>
+              <div><dt>Based in</dt><dd>{profile.location}</dd></div>
+              <div><dt>Focus</dt><dd>{profile.role}</dd></div>
+              <div><dt>Response</dt><dd>{copy('response', 'As soon as the signal is clear')}</dd></div>
             </dl>
 
             <nav className="contact-channels" aria-label="Other contact channels">
-              <a href="mailto:hello@example.com">Email ↗</a>
-              <a href="https://github.com/">GitHub ↗</a>
-              <a href="https://www.linkedin.com/">LinkedIn ↗</a>
+              <a href={`mailto:${profile.email}`}>Email ↗</a>
+              {(profile.social_links ?? []).map((link) => <a href={link.url} key={link.url}>{link.label} ↗</a>)}
             </nav>
           </div>
 
           <form className="contact-form" onSubmit={submit}>
             <div className="contact-form__head">
               <span>Transmission record</span>
-              <span><i aria-hidden="true" /> Ready</span>
+              <span><i aria-hidden="true" /> {status === 'busy' ? 'Sending' : status === 'success' ? 'Received' : status === 'error' ? 'Retry' : 'Ready'}</span>
             </div>
             <label>
               <span>01 / Name</span>
@@ -79,15 +106,15 @@ export default function ContactPage() {
               <textarea name="message" required rows={6} placeholder="What are you building or investigating?" />
             </label>
             <div className="contact-form__send">
-              <p aria-live="polite">{sent ? 'Opening your email client…' : 'The form prepares an email in your default mail client.'}</p>
-              <button type="submit">Send transmission <span aria-hidden="true">↗</span></button>
+              <p aria-live="polite">{status === 'success' ? copy('success_message', 'Transmission received. I’ll be in touch.') : status === 'error' ? error : 'Your message will be sent securely through this site.'}</p>
+              <button type="submit" disabled={status === 'busy'}>{status === 'busy' ? 'Sending…' : 'Send transmission'} <span aria-hidden="true">↗</span></button>
             </div>
           </form>
         </section>
 
         <footer className="contact-end">
           <span>Depth / abyss</span>
-          <span>Harsimranjit · ML / AI Engineer</span>
+          <span>{profile.name} · {profile.role}</span>
           <a href="/">Return to surface ↑</a>
         </footer>
       </div>

@@ -1,0 +1,4 @@
+valuation system
+Next
+Training system → in proejct detail thsi si very small maek it large liek the above lines in projett detail after that move to making api for about page as well in backend create username , passowrd loign to admin
+I found one integration mismatch before the build: backend settings use dotted keys such as `home.hero`, `site.navigation`, and `site.orb`, while several consumers expect normalized aliases. I’ll fix normalization centrally so all pages read the actual setting values rather than silently falling backAll public page families are now connected. I’m doing a final integration review of the shared API helpers and generated mappings, then I’ll run the full production build and spot-check live backend responses through the UI contracts..this is done now work on the abourt page adn connection of chatbot then we will connect everying like mongodb and more

@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { ProjectRecord, type ProjectPipelineStep, type ProjectReadoutRow } from '../components/project-record'
+import { publicApi, type PublicProject } from '../lib/publicApi'
 import './ProjectRecordShowcase.css'
 
 interface ShowcaseProject {
@@ -17,7 +19,7 @@ interface ShowcaseProject {
   readout: ProjectReadoutRow[]
 }
 
-const projects: ShowcaseProject[] = [
+const fallbackProjects: ShowcaseProject[] = [
   {
     index: '01', domain: 'Model infrastructure', status: 'Active build', title: 'Whetstone',
     question: 'What has to survive for a model result to be reproducible?',
@@ -107,7 +109,40 @@ const projects: ShowcaseProject[] = [
   },
 ]
 
+function pipelineState(state?: string): ProjectPipelineStep['state'] {
+  return state === 'complete' || state === 'skipped' || state === 'decision' ? state : undefined
+}
+
+function toShowcaseProject(project: PublicProject): ShowcaseProject {
+  return {
+    index: project.index_label || String(project.sort_order ?? '').padStart(2, '0') || '—',
+    domain: project.domain || 'Engineering',
+    status: project.status || 'In progress',
+    title: project.title,
+    question: project.question || project.thesis || project.summary || '',
+    href: `/work/${project.slug}`,
+    cmd: project.trace?.cmd || `open ${project.slug}`,
+    result: project.trace?.result || project.summary || 'Project record available',
+    pipeline: (project.pipeline || []).map((step) => ({ label: step.label, state: pipelineState(step.state) })),
+    insight: project.summary || project.thesis || project.question || '',
+    readout: project.trace?.rows || [],
+  }
+}
+
 export default function ProjectRecordShowcase({ limit }: { limit?: number }) {
+  const [projects, setProjects] = useState<ShowcaseProject[]>(fallbackProjects)
+
+  useEffect(() => {
+    let active = true
+    publicApi.projects()
+      .then((records) => {
+        const featured = records.filter((project) => project.featured !== false)
+        if (active && featured.length) setProjects(featured.map(toShowcaseProject))
+      })
+      .catch(() => undefined)
+    return () => { active = false }
+  }, [])
+
   const visibleProjects = typeof limit === 'number' ? projects.slice(0, limit) : projects
 
   return (

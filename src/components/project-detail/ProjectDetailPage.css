@@ -115,10 +115,12 @@
 .pd-notes a { display: grid; min-height: 7rem; align-content: space-between; padding: 1rem; color: inherit; border: 1px solid rgb(190 252 247 / .14); text-decoration: none; }
 .pd-notes strong { font: 400 .8rem/1.45 Inter, sans-serif; }
 .pd-notes a span { color: rgb(210 237 240 / .5); font-size: 7.5px; letter-spacing: .08em; text-transform: uppercase; }
-.pd-record-nav { display: grid; grid-template-columns: 1fr 1fr; padding: 1.25rem; border-top: 1px solid rgb(190 252 247 / .16); font-size: 9px; }
-.pd-record-nav > * { display: grid; gap: .45rem; color: rgb(230 252 251 / .78); text-decoration: none; }
+.pd-record-nav { display: grid; grid-template-columns: 1fr 1fr; padding: 1.75rem 1.25rem; border-top: 1px solid rgb(190 252 247 / .16); font-size: 9px; }
+.pd-record-nav > * { display: grid; gap: .5rem; color: rgb(230 252 251 / .78); text-decoration: none; }
 .pd-record-nav > a { justify-items: end; border-left: 1px solid rgb(190 252 247 / .12); }
 .pd-record-nav small { color: rgb(210 237 240 / .45); letter-spacing: .1em; text-transform: uppercase; }
+.pd-record-nav strong { color: rgb(238 255 255 / .94); font-size: clamp(1.35rem, 2.4vw, 2rem); font-weight: 350; letter-spacing: -.025em; transition: color 180ms ease; }
+.pd-record-nav > a:hover strong { color: rgb(150 240 232 / .95); }
 
 @media (max-width: 1000px) { .pd-layout { grid-template-columns: 1fr; }.pd-contents { position: static; display: none; }.pd-evidence__details { grid-template-columns: 1fr; }.pd-notes__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .pd-shell { width: calc(100% - 3rem); padding-top: 7rem; }.pd-metrics { grid-template-columns: 1fr 1fr; }.pd-metrics > div { min-width: 0; border-right: 0; border-bottom: 1px solid rgb(190 252 247 / .14); }.pd-metrics > div:nth-child(odd) { border-right: 1px solid rgb(190 252 247 / .14); }.pd-metrics > div:last-child { grid-column: 1 / -1; border-right: 0; }.pd-pipeline { justify-content: flex-start; overflow-x: auto; scroll-snap-type: x proximity; }.pd-pipeline span { flex: 0 0 auto; scroll-snap-align: start; }.pd-section--split { grid-template-columns: 1fr; }.pd-stages { grid-template-columns: 1fr; margin-left: 0; }.pd-placeholder__empty { min-height: 20rem; }.pd-hero-visual__signals { display: none; } }
