@@ -38,6 +38,9 @@ export interface PublicProfile {
   headline?: string
   biography?: string
   resume_url?: string
+  avatar_media_id?: string
+  avatar_url?: string
+  avatar_alt?: string
   social_links?: SocialLink[]
   working_set?: unknown
   currently?: unknown
@@ -67,6 +70,9 @@ export interface PublicProject {
   featured?: boolean
   published?: boolean
   sort_order?: number
+  cover_media_id?: string
+  cover_url?: string
+  cover_alt?: string
   metrics?: PublicProjectMetric[]
   pipeline?: PublicProjectPipelineStep[]
   trace?: {

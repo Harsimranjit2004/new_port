@@ -9,6 +9,8 @@ interface ShowcaseProject {
   status: string
   title: string
   question: string
+  coverUrl?: string
+  coverAlt?: string
 
   href: string
   cmd: string
@@ -120,6 +122,8 @@ function toShowcaseProject(project: PublicProject): ShowcaseProject {
     status: project.status || 'In progress',
     title: project.title,
     question: project.question || project.thesis || project.summary || '',
+    coverUrl: project.cover_url,
+    coverAlt: project.cover_alt || `${project.title} project cover`,
     href: `/work/${project.slug}`,
     cmd: project.trace?.cmd || `open ${project.slug}`,
     result: project.trace?.result || project.summary || 'Project record available',
@@ -172,6 +176,7 @@ export default function ProjectRecordShowcase({ limit }: { limit?: number }) {
               <span className="project-showcase__rule" aria-hidden="true" />
               <span>{project.status}</span>
             </div>
+            {project.coverUrl && <img className="project-showcase__cover" src={project.coverUrl} alt={project.coverAlt || ''} />}
             <h2>{project.title}</h2>
             <p className="project-showcase__question">{project.question}</p>
             <a className="project-showcase__open-record" href={project.href}>Open record {project.index} <span aria-hidden="true">↗</span></a>

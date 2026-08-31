@@ -49,6 +49,16 @@
   background: rgb(var(--showcase-aqua) / 0.14);
 }
 
+.project-showcase__cover {
+  display: block;
+  width: 100%;
+  max-height: 22rem;
+  margin-top: clamp(1.5rem, 3vh, 2.5rem);
+  border: 1px solid rgb(var(--showcase-aqua) / 0.14);
+  object-fit: cover;
+  aspect-ratio: 16 / 7;
+}
+
 .project-showcase h2 {
   position: relative;
   width: fit-content;
