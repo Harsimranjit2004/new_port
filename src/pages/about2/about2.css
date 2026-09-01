@@ -362,8 +362,14 @@
   .a2-observer__links a { min-height: 3rem; }
   .a2-observer__links a.is-primary { min-width: 9.75rem; }
   .a2-portrait { order: -1; }
-  .a2-portrait__frame { height: clamp(14rem, 31svh, 22rem); aspect-ratio: auto; }
-  .a2-portrait__frame img { object-fit: contain; object-position: center; }
+  .a2-portrait__frame {
+    width: min(100%, 27rem);
+    height: auto;
+    margin-inline: auto;
+    aspect-ratio: 4 / 5;
+    background: transparent;
+  }
+  .a2-portrait__frame img { object-fit: cover; object-position: center; }
   .a2-portrait figcaption { margin-top: .55rem; }
 
   /* 02: experience occupies the next screen; practice follows as screen 03. */
