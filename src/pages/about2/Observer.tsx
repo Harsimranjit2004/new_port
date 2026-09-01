@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { intro } from './about2.data'
 
 function Portrait({ src = intro.portrait.src, alt = intro.portrait.alt }: { src?: string; alt?: string }) {
-  const [failed, setFailed] = useState(false)
-  return <figure className="a2-portrait"><div className="a2-portrait__frame">{failed ? <div className="a2-portrait__placeholder" role="img" aria-label="Personal environmental portrait pending"><span>Personal portrait</span><small>Upload and assign an avatar in the Media Library</small></div> : <img src={src} alt={alt} onError={() => setFailed(true)} />}</div><figcaption>{intro.portrait.caption}</figcaption></figure>
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const failed = failedSrc === src
+
+  return <figure className="a2-portrait"><div className="a2-portrait__frame">{failed ? <div className="a2-portrait__placeholder" role="img" aria-label="Personal environmental portrait pending"><span>Personal portrait</span><small>Upload and assign an avatar in the Media Library</small></div> : <img src={src} alt={alt} onError={() => setFailedSrc(src)} />}</div><figcaption>{intro.portrait.caption}</figcaption></figure>
 }
 
 export type ObserverLink = { label: string; href: string; primary?: boolean }
