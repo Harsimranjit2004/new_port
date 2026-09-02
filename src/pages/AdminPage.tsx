@@ -3,9 +3,10 @@ import { API_BASE, ApiError, adminApi } from '../lib/adminApi'
 import AboutEditor from './AboutEditor'
 import ProjectEditor from './ProjectEditor'
 import StructuredRecordEditor from './StructuredRecordEditor'
+import SitePageForm from './SitePageForm'
 import './AdminPage.css'
 
-type Tab = 'overview' | 'helper' | 'profile' | 'about' | 'projects' | 'notes' | 'content' | 'media' | 'inbox' | 'rag'
+type Tab = 'overview' | 'helper' | 'profile' | 'home' | 'about' | 'contact-page' | 'projects' | 'notes' | 'content' | 'media' | 'inbox' | 'rag'
 type RecordValue = Record<string, unknown>
 
 const projectTemplate = {
@@ -93,7 +94,22 @@ export default function AdminPage() {
   const loadPage = async (page = pageName) => {
     try { setPageSections(await adminApi.get<RecordValue[]>(`/site/pages/${page}/admin`, adminKey)) } catch (reason) { guard(reason) }
   }
-  useEffect(() => { if (verified && tab === 'content') loadPage() }, [verified, tab, pageName])
+  useEffect(() => {
+    if (!verified) return
+    if (tab === 'content') void loadPage(pageName)
+    if (tab === 'home') void loadPage('home')
+    if (tab === 'contact-page') void loadPage('contact')
+  }, [verified, tab, pageName])
+
+  const savePageForm = async (page: 'home' | 'contact', content: RecordValue) => {
+    setLoading(true); setError('')
+    try {
+      const existing = pageSections.find((item) => item.section === 'page')
+      if (existing?.id) await adminApi.put(`/site/pages/${existing.id}`, { page, section: 'page', sort_order: Number(existing.sort_order ?? 0), enabled: true, content }, adminKey)
+      else await adminApi.post('/site/pages', { page, section: 'page', sort_order: 0, enabled: true, content }, adminKey)
+      await loadPage(page); flash(`${page === 'home' ? 'Home' : 'Contact'} page saved`)
+    } catch (reason) { guard(reason) } finally { setLoading(false) }
+  }
 
   const openEditor = (mode: typeof editorMode, item: RecordValue) => { setEditorMode(mode); setSelected(structuredClone(item)) }
   const closeEditor = () => { setEditorMode(null); setSelected(null) }
@@ -247,7 +263,7 @@ export default function AdminPage() {
 
   if (!verified) return <AdminLogin onLogin={login} />
 
-  const tabs: [Tab, string][] = [['overview','Overview'],['helper','Content Helper'],['profile','Profile'],['about','About page'],['projects','Projects'],['notes','Field Notes'],['content','Site Content'],['media','Media'],['inbox','Inbox'],['rag','AI / RAG']]
+  const tabs: [Tab, string][] = [['overview','Overview'],['helper','Content Helper'],['profile','Identity & Links'],['home','Home page'],['about','About page'],['contact-page','Contact page'],['projects','Projects'],['notes','Field Notes'],['content','Site Content'],['media','Media'],['inbox','Inbox'],['rag','AI / RAG']]
 
   return <main className="admin-page">
     <aside className="admin-sidebar"><a href="/" className="admin-brand">h.<span>control</span></a><nav>{tabs.map(([id,label]) => <button className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)} key={id}>{label}</button>)}</nav><div><span>{API_BASE}</span><button onClick={logout}>Lock session</button></div></aside>
@@ -261,7 +277,11 @@ export default function AdminPage() {
 
       {tab === 'profile' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Public profile</h2><p>Identity, links, working set, current activity, and résumé information.</p></div><button onClick={() => openEditor('profile', profile)}>Edit profile</button></div><pre>{JSON.stringify(profile, null, 2)}</pre></section>}
 
+      {tab === 'home' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Home page</h2><p>Manage all homepage copy and display settings from one form.</p></div></div><SitePageForm page="home" value={(pageSections.find((item) => item.section === 'page')?.content as RecordValue) ?? {}} saving={loading} onSave={(content) => savePageForm('home', content)} /></section>}
+
       {tab === 'about' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>About page</h2><p>Bio, experience, domains, technologies, and the bookshelf shown on the About page.</p></div></div><AboutEditor profile={profile} adminKey={adminKey} onSaved={(saved) => { setProfile(saved); flash('About content saved') }} onError={guard} /></section>}
+
+      {tab === 'contact-page' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Contact page</h2><p>Manage contact copy, form labels, subject options, messages, and SEO from one form.</p></div></div><SitePageForm page="contact" value={(pageSections.find((item) => item.section === 'page')?.content as RecordValue) ?? {}} saving={loading} onSave={(content) => savePageForm('contact', content)} /></section>}
 
       {tab === 'projects' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Project records</h2><p>Manage homepage cards and full engineering records.</p></div><button onClick={() => openEditor('project', projectTemplate)}>New project</button></div><div className="admin-table">{projects.map((item) => <article key={String(item.id)}><span>{String(item.index_label)}</span><div><strong>{String(item.title)}</strong><small>{String(item.domain)} · {String(item.status)}</small></div><em className={item.published ? 'is-live' : ''}>{item.published ? 'Published' : 'Draft'}</em><button onClick={() => openEditor('project', item)}>Edit</button><button className="is-danger" onClick={() => remove('project', item)}>Delete</button></article>)}</div></section>}
 
@@ -276,6 +296,6 @@ export default function AdminPage() {
       {tab === 'rag' && <><div className="admin-metrics">{[['Documents',rag.documents||0],['Chunks',rag.chunks||0],['Embedded',rag.embedded_chunks||0],['Uploads',knowledgeUploads.length],['Model',rag.embedding_model||'—']].map(([label,value]) => <div key={String(label)}><strong>{String(value)}</strong><span>{String(label)}</span></div>)}</div><section className="admin-panel"><div className="admin-panel__head"><div><h2>Knowledge library</h2><p>Upload PDF, DOCX, Markdown, or text. Only public, enabled documents are available to the visitor assistant.</p></div><form className="admin-upload admin-upload--knowledge" onSubmit={uploadKnowledge}><input type="file" name="file" accept=".pdf,.docx,.md,.markdown,.txt" required /><input name="title" placeholder="Document title" required /><input name="related_project" placeholder="Related project slug" /><select name="visibility" defaultValue="public" title="This controls chatbot indexing; the current R2 bucket itself is public"><option value="public">Public + indexed</option><option value="internal">Excluded from public chat</option><option value="private">Excluded from all public retrieval</option></select><button disabled={loading}>Upload</button></form></div><div className="admin-table">{knowledgeUploads.map((item) => <article key={String(item.id)}><span>{String(item.document_type)}</span><div><strong>{String(item.title)}</strong><small>{String(item.filename)} · {String(item.chunk_count || 0)} chunks</small></div><em className={item.status === 'indexed' ? 'is-live' : ''}>{String(item.visibility)} · {String(item.status)}</em><button onClick={() => updateKnowledge(item, { enabled: !item.enabled })}>{item.enabled ? 'Disable' : 'Enable'}</button><button onClick={() => updateKnowledge(item, { visibility: item.visibility === 'public' ? 'private' : 'public' })}>{item.visibility === 'public' ? 'Make private' : 'Publish'}</button><button onClick={async () => { await adminApi.post(`/knowledge-documents/${item.id}/reindex`, {}, adminKey); setKnowledgeUploads(await adminApi.get('/knowledge-documents', adminKey)); flash('Reindex queued') }}>Reindex</button><button className="is-danger" onClick={() => deleteKnowledge(item)}>Delete</button></article>)}</div></section><section className="admin-panel"><div className="admin-panel__head"><div><h2>Knowledge pipeline</h2><p>Rebuild embeddings after importing or editing portfolio evidence.</p></div><div className="admin-inline"><button disabled={loading} onClick={() => reindex(false)}>Incremental reindex</button><button disabled={loading} onClick={() => reindex(true)}>Force rebuild</button></div></div><div className="admin-table">{sources.map((item) => <article key={String(item.id)}><span>{String(item.source_type)}</span><div><strong>{String(item.title)}</strong><small>{String(item.url)}</small></div><em className={item.enabled ? 'is-live' : ''}>{item.enabled ? 'Enabled' : 'Disabled'}</em><button onClick={async () => { await adminApi.patch(`/ai/sources/${item.id}/toggle`, {}, adminKey); setSources(await adminApi.get('/ai/sources', adminKey)) }}>Toggle</button></article>)}</div></section></>}
     </section>
 
-    {editorMode && selected && <div className="admin-modal" role="dialog" aria-modal="true"><div><header><div><span>{editorMode}</span><h2>{String(selected.title || selected.key || selected.name || 'New record')}</h2></div><button onClick={closeEditor} aria-label="Close editor">×</button></header>{editorMode === 'project' ? <ProjectEditor value={selected} media={media} onChange={setSelected} /> : editorMode ? <StructuredRecordEditor mode={editorMode} value={selected} media={media} onChange={setSelected} /> : null}<footer><button onClick={closeEditor}>Cancel</button><button onClick={saveEditor} disabled={loading}>{loading ? 'Saving…' : 'Save changes'}</button></footer></div></div>}
+    {editorMode && selected && <div className="admin-modal" role="dialog" aria-modal="true"><div><header><div><span>{editorMode}</span><h2>{String(selected.title || selected.key || selected.name || 'New record')}</h2></div><button onClick={closeEditor} aria-label="Close editor">×</button></header>{editorMode === 'project' ? <ProjectEditor value={selected} media={media} notes={notes} onChange={setSelected} /> : editorMode ? <StructuredRecordEditor mode={editorMode} value={selected} media={media} onChange={setSelected} /> : null}<footer><button onClick={closeEditor}>Cancel</button><button onClick={saveEditor} disabled={loading}>{loading ? 'Saving…' : 'Save changes'}</button></footer></div></div>}
   </main>
 }

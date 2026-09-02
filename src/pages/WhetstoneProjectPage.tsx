@@ -83,6 +83,9 @@ function toDetailConfig(project: PublicProject): ProjectDetailConfig {
   const problem = section(project, 'problem')
   const system = section(project, 'system')
   const buildSections = project.sections?.filter((item) => !['problem', 'system'].includes(item.id.toLowerCase())) || []
+  const configuredStages = Array.isArray(extra.stages) ? extra.stages.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object' && !Array.isArray(item)) : []
+  const configuredChecks = Array.isArray(extra.checks) ? extra.checks.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object' && !Array.isArray(item)) : []
+  const configuredNotes = Array.isArray(extra.related_notes) ? extra.related_notes.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object' && !Array.isArray(item)) : []
   const technologies = Array.isArray(project.technologies) ? project.technologies.map(String) : []
   const pipeline = project.pipeline?.map((step) => step.label) || fallback?.pipeline || technologies
   const evidencePipeline: ProjectPipelineStep[] = (project.pipeline || []).map((step) => ({
@@ -110,32 +113,31 @@ function toDetailConfig(project: PublicProject): ProjectDetailConfig {
     system: {
       title: system?.title || fallback?.system.title || 'System',
       copy: system?.body || fallback?.system.copy || project.summary || '',
-      nodes: pipeline.length ? pipeline : fallback?.system.nodes || [],
+      nodes: Array.isArray(extra.system_nodes) && extra.system_nodes.length ? extra.system_nodes.map(String) : pipeline.length ? pipeline : fallback?.system.nodes || [],
     },
-    stages: buildSections.length ? buildSections.map((item, index) => ({
-      index: String(index + 1).padStart(2, '0'),
-      label: item.id,
-      title: item.title,
-      detail: item.body,
-      state: project.status,
+    stages: configuredStages.length ? configuredStages.map((item, index) => ({
+      index: String(item.index || String(index + 1).padStart(2, '0')),
+      label: String(item.label || ''), title: String(item.title || ''), detail: String(item.detail || ''), state: String(item.state || ''),
+    })) : buildSections.length ? buildSections.map((item, index) => ({
+      index: String(index + 1).padStart(2, '0'), label: item.id, title: item.title, detail: item.body, state: project.status,
     })) : fallback?.stages || [],
     evidence: {
       cmd: project.trace?.cmd || fallback?.evidence.cmd || `open ${project.slug}`,
       result: project.trace?.result || fallback?.evidence.result || project.summary || 'Project record available',
       pipeline: evidencePipeline.length ? evidencePipeline : fallback?.evidence.pipeline || [],
       rows: project.trace?.rows || fallback?.evidence.rows || [],
-      checks: technologies.length ? technologies : fallback?.evidence.checks || [],
+      checks: configuredChecks.length ? configuredChecks.map((item) => String(item.label || '')).filter(Boolean) : technologies.length ? technologies : fallback?.evidence.checks || [],
     },
-    notes: fallback?.notes || [],
+    notes: configuredNotes.length ? configuredNotes.map((item) => ({ title: String(item.title || ''), meta: String(item.meta || 'Field note'), href: String(item.href || '/field-notes') })) : fallback?.notes || [],
     current: String(extra.current || fallback?.current || project.status || 'In progress'),
     next: String(extra.next || fallback?.next || 'More work'),
     nextHref: typeof extra.nextHref === 'string' ? extra.nextHref : fallback?.nextHref || '/work',
-    ...(fallback ? {
-      heroVisual: fallback.heroVisual,
-      plateImage: fallback.plateImage,
-      plateAlt: fallback.plateAlt,
-      plateCaption: fallback.plateCaption,
-    } : {}),
+    ...((typeof extra.hero_url === 'string' && extra.hero_url) ? {
+      heroVisual: <figure className="pd-project-image"><img src={extra.hero_url} alt={String(extra.hero_alt || `${project.title} project hero`)} /><figcaption><span>{String(extra.hero_caption || project.domain || '')}</span><span>{String(extra.hero_credit || '')}</span></figcaption></figure>,
+    } : fallback ? { heroVisual: fallback.heroVisual } : {}),
+    plateImage: typeof asRecord(problem).media_url === 'string' ? String(asRecord(problem).media_url) : fallback?.plateImage,
+    plateAlt: typeof asRecord(problem).media_alt === 'string' ? String(asRecord(problem).media_alt) : fallback?.plateAlt,
+    plateCaption: typeof extra.plate_caption === 'string' ? extra.plate_caption : fallback?.plateCaption,
   }
 }
 

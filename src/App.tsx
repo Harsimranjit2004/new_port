@@ -52,14 +52,15 @@ export default function App() {
         const home = settings.home && typeof settings.home === 'object' ? settings.home as Record<string, unknown> : {}
         const hero = home.hero && typeof home.hero === 'object' ? home.hero as Record<string, unknown> : {}
         let descentLines: string[] | undefined
+        let pageContent: Record<string, unknown> = {}
 
         if (pageResult.status === 'fulfilled') {
           const payload = pageResult.value
           if (Array.isArray(payload)) {
-            const descent = (payload as SitePageSection[]).find(
-              (section) => section.section === 'descent_statement' && section.enabled !== false,
-            )
-            descentLines = stringArray(descent?.content?.lines)
+            const sections = payload as SitePageSection[]
+            const descent = sections.find((section) => section.section === 'descent_statement' && section.enabled !== false)
+            pageContent = sections.find((section) => section.section === 'page' && section.enabled !== false)?.content ?? {}
+            descentLines = stringArray(pageContent.descent_lines) ?? stringArray(descent?.content?.lines)
           } else {
             const descent = payload.descent_statement
             if (descent && typeof descent === 'object') {
@@ -73,10 +74,10 @@ export default function App() {
         }
 
         setHomeContent({
-          name: nonEmptyString(profile?.name),
-          role: nonEmptyString(profile?.role),
-          eyebrow: nonEmptyString(hero.eyebrow),
-          disciplines: stringArray(hero.disciplines),
+          name: nonEmptyString(pageContent.name) ?? nonEmptyString(profile?.name),
+          role: nonEmptyString(pageContent.role) ?? nonEmptyString(profile?.role),
+          eyebrow: nonEmptyString(pageContent.eyebrow) ?? nonEmptyString(hero.eyebrow),
+          disciplines: stringArray(pageContent.disciplines) ?? stringArray(hero.disciplines),
           descentLines: descentLines ?? fallbackDescentLines,
         })
       },

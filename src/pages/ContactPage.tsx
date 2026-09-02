@@ -28,6 +28,7 @@ export default function ContactPage() {
   }, [])
 
   const copy = (key: string, fallback: string) => typeof content[key] === 'string' && content[key] ? String(content[key]) : fallback
+  const subjectOptions = Array.isArray(content.subject_options) && content.subject_options.length ? content.subject_options.map(String) : ['ML systems', 'Model infrastructure', 'Research / experimentation', 'Something else']
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -84,30 +85,27 @@ export default function ContactPage() {
               <span><i aria-hidden="true" /> {status === 'busy' ? 'Sending' : status === 'success' ? 'Received' : status === 'error' ? 'Retry' : 'Ready'}</span>
             </div>
             <label>
-              <span>01 / Name</span>
+              <span>01 / {copy('name_label', 'Name')}</span>
               <input type="text" name="name" autoComplete="name" required placeholder="Your name" />
             </label>
             <label>
-              <span>02 / Return address</span>
+              <span>02 / {copy('email_label', 'Return address')}</span>
               <input type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
             </label>
             <label>
-              <span>03 / Subject</span>
+              <span>03 / {copy('subject_label', 'Subject')}</span>
               <select name="topic" defaultValue="">
                 <option value="" disabled>Select a signal</option>
-                <option>ML systems</option>
-                <option>Model infrastructure</option>
-                <option>Research / experimentation</option>
-                <option>Something else</option>
+                {subjectOptions.map((option) => <option key={option}>{option}</option>) }
               </select>
             </label>
             <label>
-              <span>04 / Message</span>
+              <span>04 / {copy('message_label', 'Message')}</span>
               <textarea name="message" required rows={6} placeholder="What are you building or investigating?" />
             </label>
             <div className="contact-form__send">
               <p aria-live="polite">{status === 'success' ? copy('success_message', 'Transmission received. I’ll be in touch.') : status === 'error' ? error : 'Your message will be sent securely through this site.'}</p>
-              <button type="submit" disabled={status === 'busy'}>{status === 'busy' ? 'Sending…' : 'Send transmission'} <span aria-hidden="true">↗</span></button>
+              <button type="submit" disabled={status === 'busy'}>{status === 'busy' ? copy('sending_label', 'Sending…') : copy('submit_label', 'Send transmission')} <span aria-hidden="true">↗</span></button>
             </div>
           </form>
         </section>
