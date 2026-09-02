@@ -29,10 +29,23 @@ body {
   min-height: 100vh;
 }
 
+.global-orb-chat {
+  display: flex;
+  height: min(24rem, calc(100vh - 14rem));
+  min-height: 12rem;
+  flex-direction: column;
+}
+
 .global-orb-chat__messages {
   display: grid;
+  min-height: 0;
+  align-content: start;
+  flex: 1;
   gap: .55rem;
   margin-top: 1rem;
+  padding-right: .25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .global-orb-chat__messages > .is-user,
@@ -76,6 +89,7 @@ body {
 
 .global-orb-chat form {
   display: grid;
+  flex: none;
   grid-template-columns: minmax(0, 1fr) 2.6rem;
   gap: .5rem;
   margin-top: 1rem;
