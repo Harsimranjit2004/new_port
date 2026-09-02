@@ -69,16 +69,12 @@ export default function AdminPage() {
   const loadCore = useCallback(async (key = adminKey) => {
     setLoading(true); setError('')
     try {
-      const [profileData, projectData, noteData, settingData, mediaData, inboxData, uploadData] = await Promise.all([
+      const [profileData, projectData, noteData, settingData, mediaData, inboxData] = await Promise.all([
         adminApi.get<RecordValue>('/profile', key), adminApi.get<RecordValue[]>('/projects/admin', key),
         adminApi.get<RecordValue[]>('/field-notes/admin', key), adminApi.get<RecordValue[]>('/site/settings', key),
         adminApi.get<RecordValue[]>('/media-assets', key), adminApi.get<RecordValue[]>('/contact', key),
-        adminApi.get<RecordValue[]>('/knowledge-documents', key).catch((reason) => {
-          if (reason instanceof ApiError && reason.status === 404) return []
-          throw reason
-        }),
       ])
-      setProfile(profileData); setProjects(projectData); setNotes(noteData); setSettings(settingData); setMedia(mediaData); setInbox(inboxData); setKnowledgeUploads(uploadData)
+      setProfile(profileData); setProjects(projectData); setNotes(noteData); setSettings(settingData); setMedia(mediaData); setInbox(inboxData); setKnowledgeUploads([])
       try { setRag(await adminApi.get<RecordValue>('/ai/status', key)); setSources(await adminApi.get<RecordValue[]>('/ai/sources', key)) } catch { setRag({ status: 'Not indexed' }); setSources([]) }
       setVerified(true)
     } finally { setLoading(false) }
