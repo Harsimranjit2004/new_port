@@ -40,15 +40,28 @@ function GlobalOrbChat() {
     setBusy(true)
     setError('')
     try {
-      const response = await publicApi.chat(text, history)
-      const citedNumbers = new Set(Array.from(response.answer.matchAll(/\[(\d+)\]/g), (match) => Number(match[1]) - 1))
-      const citedSources = response.sources.flatMap((source, index) => citedNumbers.has(index) ? [{ ...source, citationNumber: index + 1 }] : [])
-      setMessages((current) => [...current, {
-        role: 'assistant',
-        text: response.answer,
-        sources: citedSources,
-        actions: citedSources.length ? response.suggested_actions : [],
-      }])
+      let streamedAnswer = ''
+      let assistantStarted = false
+      await publicApi.streamChat(text, history, (event) => {
+        if (event.type === 'token') {
+          streamedAnswer += event.content
+          if (!assistantStarted) {
+            assistantStarted = true
+            setMessages((current) => [...current, { role: 'assistant', text: streamedAnswer }])
+          } else {
+            setMessages((current) => current.map((message, index) => index === current.length - 1 ? { ...message, text: streamedAnswer } : message))
+          }
+        }
+        if (event.type === 'metadata') {
+          const citedNumbers = new Set(Array.from(streamedAnswer.matchAll(/\[(\d+)\]/g), (match) => Number(match[1]) - 1))
+          const citedSources = event.sources.flatMap((source, index) => citedNumbers.has(index) ? [{ ...source, citationNumber: index + 1 }] : [])
+          setMessages((current) => current.map((message, index) => index === current.length - 1 ? {
+            ...message,
+            sources: citedSources,
+            actions: event.suggested_actions,
+          } : message))
+        }
+      })
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'The assistant is unavailable right now.')
     } finally {

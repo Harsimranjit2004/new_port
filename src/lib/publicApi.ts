@@ -55,6 +55,11 @@ export interface ChatMessage { role: 'user' | 'assistant'; content: string }
 export interface ChatSource { title: string; url: string; source_type: string; excerpt: string; score: number }
 export interface ChatAction { label: string; url: string }
 export interface ChatResponse { answer: string; sources: ChatSource[]; suggested_actions: ChatAction[] }
+export type ChatStreamEvent =
+  | { type: 'token'; content: string }
+  | { type: 'metadata'; sources: ChatSource[]; suggested_actions: ChatAction[] }
+  | { type: 'done' }
+  | { type: 'error'; error?: string; detail?: string; message?: string }
 export type PublicFieldNote = Record<string, unknown> & { slug?: string; title?: string; excerpt?: string; summary?: string; published_at?: string; created_at?: string; note_type?: string; project?: string; read_time?: string | number; featured?: boolean }
 
 export interface PublicProject {
@@ -84,6 +89,38 @@ export interface PublicProject {
   links?: unknown
   technologies?: unknown
   extra?: unknown
+}
+
+async function streamChat(message: string, history: ChatMessage[], onEvent: (event: ChatStreamEvent) => void): Promise<void> {
+  const response = await fetch(`${API_BASE}/ai/chat/stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
+    body: JSON.stringify({ message, history }),
+  })
+  if (!response.ok) {
+    const data = await response.json().catch(() => null)
+    throw new Error(data?.detail || `Request failed (${response.status})`)
+  }
+  if (!response.body) throw new Error('Streaming is not supported by this browser.')
+
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+  let buffer = ''
+  const consume = (line: string) => {
+    if (!line.trim()) return
+    const event = JSON.parse(line) as ChatStreamEvent
+    if (event.type === 'error') throw new Error(event.error || event.detail || event.message || 'The assistant stream failed.')
+    onEvent(event)
+  }
+
+  while (true) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += value
+    const lines = buffer.split('\n')
+    buffer = lines.pop() ?? ''
+    for (const line of lines) consume(line)
+  }
+  consume(buffer)
 }
 
 async function publicRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -143,6 +180,7 @@ export const publicApi = {
   aboutPage: () => publicRequest<SitePagePayload>('/site/pages/about'),
   contact: (body: ContactCreate) => publicRequest<unknown>('/contact', { method: 'POST', body: JSON.stringify(body) }),
   chat: (message: string, history: ChatMessage[]) => publicRequest<ChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, history }) }),
+  streamChat,
   async fieldNotes(): Promise<PublicFieldNote[]> {
     const payload = await publicRequest<PublicFieldNote[] | { results?: PublicFieldNote[]; notes?: PublicFieldNote[] }>('/field-notes')
     return Array.isArray(payload) ? payload : payload.results ?? payload.notes ?? []
