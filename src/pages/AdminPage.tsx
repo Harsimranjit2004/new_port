@@ -105,8 +105,10 @@ export default function AdminPage() {
     setLoading(true); setError('')
     try {
       const existing = pageSections.find((item) => item.section === 'page')
-      if (existing?.id) await adminApi.put(`/site/pages/${existing.id}`, { page, section: 'page', sort_order: Number(existing.sort_order ?? 0), enabled: true, content }, adminKey)
-      else await adminApi.post('/site/pages', { page, section: 'page', sort_order: 0, enabled: true, content }, adminKey)
+      const existingContent = existing?.content && typeof existing.content === 'object' && !Array.isArray(existing.content) ? existing.content as RecordValue : {}
+      const mergedContent = { ...existingContent, ...content }
+      if (existing?.id) await adminApi.put(`/site/pages/${existing.id}`, { page, section: 'page', sort_order: Number(existing.sort_order ?? 0), enabled: true, content: mergedContent }, adminKey)
+      else await adminApi.post('/site/pages', { page, section: 'page', sort_order: 0, enabled: true, content: mergedContent }, adminKey)
       await loadPage(page); flash(`${page === 'home' ? 'Home' : 'Contact'} page saved`)
     } catch (reason) { guard(reason) } finally { setLoading(false) }
   }
@@ -256,6 +258,34 @@ export default function AdminPage() {
     try { const result = await adminApi.post<RecordValue>('/ai/reindex', { force, source_types: null }, adminKey); flash(`Indexed ${result.chunks_embedded || 0} chunks`); setRag(await adminApi.get('/ai/status', adminKey)); setSources(await adminApi.get('/ai/sources', adminKey)) } catch (reason) { guard(reason) } finally { setLoading(false) }
   }
 
+  const pageContent = (page: 'home' | 'contact') => {
+    const relevant = pageSections.filter((item) => !item.page || item.page === page)
+    return relevant.filter((item) => item.enabled !== false).reduce<RecordValue>((result, item) => {
+      const content = item.content && typeof item.content === 'object' && !Array.isArray(item.content) ? item.content as RecordValue : {}
+      return { ...result, ...content }
+    }, {})
+  }
+  const settingValue = (key: string): unknown => settings.find((item) => item.key === key || String(item.key).endsWith(`.${key}`))?.value
+  const homeStored = pageContent('home')
+  const contactStored = pageContent('contact')
+  const homeDefaults: RecordValue = {
+    eyebrow: String(settingValue('eyebrow') || 'Portfolio / ML systems'),
+    name: String(homeStored.name || profile.name || 'Harsimranjit'), role: String(homeStored.role || profile.role || 'ML / AI Engineer'),
+    disciplines: homeStored.disciplines || settingValue('disciplines') || ['Machine learning', 'Infrastructure', 'Evaluation'],
+    descent_lines: homeStored.descent_lines || homeStored.lines || ['The result is only the surface.', 'The interesting part is', 'what made it possible.'],
+    home_about_text: String(homeStored.home_about_text || profile.headline || ''), projects_heading: String(homeStored.projects_heading || 'Selected work'),
+    projects_intro: String(homeStored.projects_intro || ''), projects_count: String(homeStored.projects_count || ''), experience_count: String(homeStored.experience_count || ''),
+    tags: homeStored.tags || ['All', 'Data Science', 'Web Development', 'C++'], primary_label: String(homeStored.primary_label || 'View work'), primary_url: String(homeStored.primary_url || '/work'),
+    secondary_label: String(homeStored.secondary_label || 'About'), secondary_url: String(homeStored.secondary_url || '/about'), ...homeStored,
+  }
+  const contactDefaults: RecordValue = {
+    rail_label: 'Contact / final depth', channel_status: 'Channel open', label: 'Next / conversation', title: 'Have something interesting to build?',
+    intro: String(profile.biography || 'I am interested in ML systems, model infrastructure, evaluation, and engineering problems where understanding the path matters as much as the result.'),
+    response: 'As soon as the signal is clear', form_heading: 'Transmission record', name_label: 'Name', email_label: 'Return address', subject_label: 'Subject', message_label: 'Message',
+    subject_options: ['ML systems', 'Model infrastructure', 'Research / experimentation', 'Something else'], submit_label: 'Send transmission', sending_label: 'Sending…',
+    success_message: 'Transmission received. I’ll be in touch.', privacy_text: 'Your message will be sent securely through this site.', ...contactStored,
+  }
+
   const counts = useMemo(() => [
     ['Projects', projects.length], ['Published', projects.filter((item) => item.published).length], ['Field Notes', notes.length],
     ['Messages', inbox.filter((item) => item.status === 'new').length], ['Media', media.length], ['RAG chunks', Number(rag.chunks || 0)],
@@ -277,11 +307,11 @@ export default function AdminPage() {
 
       {tab === 'profile' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Public profile</h2><p>Identity, links, working set, current activity, and résumé information.</p></div><button onClick={() => openEditor('profile', profile)}>Edit profile</button></div><pre>{JSON.stringify(profile, null, 2)}</pre></section>}
 
-      {tab === 'home' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Home page</h2><p>Manage all homepage copy and display settings from one form.</p></div></div><SitePageForm page="home" value={(pageSections.find((item) => item.section === 'page')?.content as RecordValue) ?? {}} saving={loading} onSave={(content) => savePageForm('home', content)} /></section>}
+      {tab === 'home' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Home page</h2><p>Manage all homepage copy and display settings from one form.</p></div></div><SitePageForm page="home" value={homeDefaults} saving={loading} onSave={(content) => savePageForm('home', content)} /></section>}
 
       {tab === 'about' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>About page</h2><p>Bio, experience, domains, technologies, and the bookshelf shown on the About page.</p></div></div><AboutEditor profile={profile} adminKey={adminKey} onSaved={(saved) => { setProfile(saved); flash('About content saved') }} onError={guard} /></section>}
 
-      {tab === 'contact-page' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Contact page</h2><p>Manage contact copy, form labels, subject options, messages, and SEO from one form.</p></div></div><SitePageForm page="contact" value={(pageSections.find((item) => item.section === 'page')?.content as RecordValue) ?? {}} saving={loading} onSave={(content) => savePageForm('contact', content)} /></section>}
+      {tab === 'contact-page' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Contact page</h2><p>Manage contact copy, form labels, subject options, messages, and SEO from one form.</p></div></div><SitePageForm page="contact" value={contactDefaults} saving={loading} onSave={(content) => savePageForm('contact', content)} /></section>}
 
       {tab === 'projects' && <section className="admin-panel"><div className="admin-panel__head"><div><h2>Project records</h2><p>Manage homepage cards and full engineering records.</p></div><button onClick={() => openEditor('project', projectTemplate)}>New project</button></div><div className="admin-table">{projects.map((item) => <article key={String(item.id)}><span>{String(item.index_label)}</span><div><strong>{String(item.title)}</strong><small>{String(item.domain)} · {String(item.status)}</small></div><em className={item.published ? 'is-live' : ''}>{item.published ? 'Published' : 'Draft'}</em><button onClick={() => openEditor('project', item)}>Edit</button><button className="is-danger" onClick={() => remove('project', item)}>Delete</button></article>)}</div></section>}
 

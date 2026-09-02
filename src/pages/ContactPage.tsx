@@ -56,14 +56,14 @@ export default function ContactPage() {
       <OceanBackground screens={1} startDepth="shallow" endDepth="deep" showSurfaceWaves className="contact-ocean">
       <div className="contact-shell">
         <div className="contact-rail">
-          <span>Contact / final depth</span>
+          <span>{copy('rail_label', 'Contact / final depth')}</span>
           <i aria-hidden="true" />
-          <span>Channel open</span>
+          <span>{copy('channel_status', 'Channel open')}</span>
         </div>
 
         <section className="contact-layout">
           <div className="contact-intro">
-            <span className="contact-label">Next / conversation</span>
+            <span className="contact-label">{copy('label', 'Next / conversation')}</span>
             <h1>{copy('title', copy('heading', 'Have something interesting to build?'))}</h1>
             <p>{copy('intro', copy('description', profile.biography || 'I am interested in ML systems, model infrastructure, evaluation, and engineering problems where understanding the path matters as much as the result.'))}</p>
 
@@ -81,7 +81,7 @@ export default function ContactPage() {
 
           <form className="contact-form" onSubmit={submit}>
             <div className="contact-form__head">
-              <span>Transmission record</span>
+              <span>{copy('form_heading', 'Transmission record')}</span>
               <span><i aria-hidden="true" /> {status === 'busy' ? 'Sending' : status === 'success' ? 'Received' : status === 'error' ? 'Retry' : 'Ready'}</span>
             </div>
             <label>
@@ -104,7 +104,7 @@ export default function ContactPage() {
               <textarea name="message" required rows={6} placeholder="What are you building or investigating?" />
             </label>
             <div className="contact-form__send">
-              <p aria-live="polite">{status === 'success' ? copy('success_message', 'Transmission received. I’ll be in touch.') : status === 'error' ? error : 'Your message will be sent securely through this site.'}</p>
+              <p aria-live="polite">{status === 'success' ? copy('success_message', 'Transmission received. I’ll be in touch.') : status === 'error' ? error : copy('privacy_text', 'Your message will be sent securely through this site.')}</p>
               <button type="submit" disabled={status === 'busy'}>{status === 'busy' ? copy('sending_label', 'Sending…') : copy('submit_label', 'Send transmission')} <span aria-hidden="true">↗</span></button>
             </div>
           </form>
